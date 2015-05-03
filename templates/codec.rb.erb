@@ -1,0 +1,33 @@
+module Mediakit
+  module Codecs
+    module Video
+      <% @items.select{|x| x.type == :video }.each do |item| %>
+      class Codec<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+        def encoders; <%= item.encoders.inspect %>; end
+        def decoders; <%= item.decoders.inspect %>; end
+      end
+      <% end %>
+    end
+
+    module Audio
+      <% @items.select{|x| x.type == :audio }.each do |item| %>
+      class Codec<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+        def encoders; <%= item.encoders.inspect %>; end
+        def decoders; <%= item.decoders.inspect %>; end
+      end
+      <% end %>
+    end
+
+    module Subtitle
+      <% @items.select{|x| x.type == :subtitle }.each do |item| %>
+      class Codec<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+        def encoders; <%= item.encoders.inspect %>; end
+        def decoders; <%= item.decoders.inspect %>; end
+      end
+      <% end %>
+    end
+  end
+end

@@ -1,8 +1,11 @@
 # Mediakit
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/mediakit`. To experiment with that code, run `bin/console` for an interactive prompt.
+mediakit is the libraries for ffmpeg and sox backed media manipulation something.
+I've design this library for following purpose.
 
-TODO: Delete this and the text above, and describe your gem
+* adapt layered architechture to various usage
+* easy testing design by separation of concern
+* help for building complex manipulation by options builder class
 
 ## Installation
 
@@ -18,11 +21,52 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install mediakit
+$ gem install mediakit
+
+## Requirements
+
+This library behave command wrapper in your script.
+So it need each binary command file.
+
+* latest ffmpeg
 
 ## Usage
 
-TODO: Write usage instructions here
+### Low Level Usage
+
+The low level means it's near command line usage.
+This is a little bore interface for constructing options,
+but can pass certain it.
+
+```rb
+driver = Mediakit::Drivers::FFmpeg.new
+ffmpeg = Mediakit::Runners::FFmpeg.new(driver)
+
+options = Mediakit::Runners::FFmpeg::Options.new(
+  Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
+    't' => 100,
+    'y' => true,
+  ),
+  Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+    options: nil,
+    path:    input,
+  ),
+  Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
+    options: {
+      'vf' => 'crop=320:320:0:0',
+      'ar' => '44100',
+      'ab' => '128k',
+    },
+    path:    output,
+  ),
+)
+puts "$ ffmpeg #options"
+puts ffmpeg.run(options)
+```
+
+### High Level Usage
+
+TBD
 
 ## Development
 
@@ -37,3 +81,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## References
+
+* [streamio/streamio-ffmpeg](https://github.com/streamio/streamio-ffmpeg)
+* [ruby-av/av](https://github.com/ruby-av/av)
+* [Xuggler](http://www.xuggle.com/xuggler/)
+* [PHP-FFMpeg/PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)

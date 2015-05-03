@@ -1,0 +1,27 @@
+module Mediakit
+  module Encoders
+    module Video
+      <% @items.select{|x| x.type == :video }.each do |item| %>
+      class Encoder<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+      end
+      <% end %>
+    end
+
+    module Audio
+      <% @items.select{|x| x.type == :audio }.each do |item| %>
+      class Encoder<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+      end
+      <% end %>
+    end
+
+    module Subtitle
+      <% @items.select{|x| x.type == :subtitle }.each do |item| %>
+      class Encoder<%= item.name.classify %>
+        def name; '<%= item.name %>' end
+      end
+      <% end %>
+    end
+  end
+end
