@@ -22,7 +22,13 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+
+```rb
+media = Mediakit::Media.new('/path/to/mediafile')
+options = Mediakit::Transcoder::Options.new
+transcoder = Mediakit::Transcoder.new(options)
+transcoder.input(media).output('output.mp4')
+```
 
 ## Development
 
