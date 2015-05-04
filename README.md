@@ -1,8 +1,11 @@
 # Mediakit
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/mediakit`. To experiment with that code, run `bin/console` for an interactive prompt.
+mediakit is the libraries for ffmpeg and sox backed media manipulation something.
+I've design this library for following purpose.
 
-TODO: Delete this and the text above, and describe your gem
+* using fluent api
+* easy testing design by separation of concern
+* help for building complex manipulation by options builder class
 
 ## Installation
 
@@ -18,10 +21,17 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install mediakit
+$ gem install mediakit
+
+## Requirements
+
+This library behave command wrapper in your script.
+So it need each binary command file.
+
+* MUST latest ffmpeg
+* OPTIONAL latest sox
 
 ## Usage
-
 
 ```rb
 media = Mediakit::Media.new('/path/to/mediafile')
@@ -43,3 +53,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## References
+
+* [streamio/streamio-ffmpeg](https://github.com/streamio/streamio-ffmpeg)
+* [ruby-av/av](https://github.com/ruby-av/av)
+* [Xuggler](http://www.xuggle.com/xuggler/)
+* [PHP-FFMpeg/PHP-FFMpeg](https://github.com/PHP-FFMpeg/PHP-FFMpeg)
