@@ -1,3 +1,5 @@
+require 'mediakit/command_wrapper/ffmpeg/argument_builder'
+
 module Mediakit
   module CommandWrapper
     class FFmpeg
