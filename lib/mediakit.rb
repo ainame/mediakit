@@ -1,5 +1,5 @@
 require "mediakit/version"
 
 module Mediakit
-  require 'mediakit/media'
+  require 'mediakit/medium'
 end

@@ -17,7 +17,7 @@ module Mediakit
     end
 
     def input(medium)
-      raise "can't accept other object." unless media.kind_of?(Mediakit::Media)
+      raise "can't accept other object." unless media.kind_of?(Mediakit::Medium)
       @inputs << medium
       self
     end
@@ -29,7 +29,7 @@ module Mediakit
 
     def transcode
       Mediakit::CommandWrapper::FFmpeg.execute(args)
-      Mediakit::Media.new(@output_path)
+      Mediakit::Medium.new(@output_path)
     end
 
     def args

@@ -4,7 +4,7 @@ require 'ostruct'
 require 'open-uri'
 
 module Mediakit
-  class Media
+  class Medium
     def initialize(path_or_url)
       @path_or_url = path_or_url
     end
