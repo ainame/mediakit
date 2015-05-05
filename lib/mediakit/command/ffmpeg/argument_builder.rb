@@ -2,10 +2,10 @@ module Mediakit
   module Command
     class FFmpeg
       class ArgumentBuilder
-        def initialize(options)
+        def initialize
           @input_paths = []
-          @output_path = nil
-          @options = nil
+          @output_path = ''
+          @options = ''
         end
 
         def build

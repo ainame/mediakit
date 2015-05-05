@@ -3,8 +3,7 @@ require 'mediakit/command/ffmpeg/argument_builder'
 
 class TestMediakitFFmpegArgumentBuilder < Minitest::Test
   def setup
-    dummy_options = {}
-    @builder = Mediakit::Command::FFmpeg::ArgumentBuilder.new(dummy_options)
+    @builder = Mediakit::Command::FFmpeg::ArgumentBuilder.new
   end
 
   def test_input_formats

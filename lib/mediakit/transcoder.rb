@@ -1,10 +1,12 @@
 require 'mediakit/command'
+require 'mediakit/command/ffmpeg/argument_builder'
 
 module Mediakit
   class Transcoder
-    attr_reader :inputs, :output_path, :options
+    attr_reader(:command, :options, :inputs, :output_path)
 
-    def initialize(options)
+    def initialize(command:, options:)
+      @command = command
       @options = options
       @inputs = []
       @output_path = nil
@@ -28,12 +30,16 @@ module Mediakit
     end
 
     def transcode
-      Mediakit::Command::FFmpeg.execute(args)
+      command.execute(args)
       Mediakit::Medium.new(@output_path)
     end
 
     def args
-
+      builder = Command::FFmpeg::ArgumentBuilder.new
+      builder.inputs(inputs.map(&:path))
+      builder.options(options)
+      builder.output(output_path)
+      builder.build
     end
   end
 end
