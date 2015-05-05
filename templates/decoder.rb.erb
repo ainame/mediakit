@@ -1,0 +1,11 @@
+module Mediakit
+  module Decoders
+    module <%= @item.type.to_s.classify %>
+      class Decoder<%= @item.name.classify %>
+        def name
+          '<%= @item.name %>'
+        end
+      end
+    end
+  end
+end

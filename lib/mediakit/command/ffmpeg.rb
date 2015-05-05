@@ -12,11 +12,19 @@ module Mediakit
       end
 
       def codecs
-        @codecs ||= execute('-codecs')
+        @codecs ||= execute('-codecs').split("\n -------\n")[1].each_line.to_a
       end
 
       def formats
-        @formats ||= execute('-formats')
+        @formats ||= execute('-formats').split("\n --\n")[1].each_line.to_a
+      end
+
+      def decoders
+        @decoders ||= execute('-decoders').split("\n ------\n")[1].each_line.to_a
+      end
+
+      def encoders
+        @encoders ||= execute('-encoders').split("\n ------\n")[1].each_line.to_a
       end
     end
   end

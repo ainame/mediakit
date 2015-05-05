@@ -1,0 +1,9 @@
+module Mediakit
+  module Formats
+    class Format<%= @item.name.classify %>
+      def name
+        '<%= @item.name %>'
+      end
+    end
+  end
+end

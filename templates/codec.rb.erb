@@ -1,0 +1,11 @@
+module Mediakit
+  module Codecs
+    module <%= @item.type.to_s.classify %>
+      class Codec<%= @item.name.classify %>
+        def name
+          '<%= @item.name %>'
+        end
+      end
+    end
+  end
+end
