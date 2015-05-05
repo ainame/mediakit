@@ -1,10 +1,10 @@
 require 'minitest_helper'
-require 'mediakit/command_wrapper/ffmpeg/argument_builder'
+require 'mediakit/command/ffmpeg/argument_builder'
 
 class TestMediakitFFmpegArgumentBuilder < Minitest::Test
   def setup
     dummy_options = {}
-    @builder = Mediakit::CommandWrapper::FFmpeg::ArgumentBuilder.new(dummy_options)
+    @builder = Mediakit::Command::FFmpeg::ArgumentBuilder.new(dummy_options)
   end
 
   def test_input_formats

@@ -1,4 +1,4 @@
-require 'mediakit/command_wrapper'
+require 'mediakit/command'
 require 'json'
 require 'ostruct'
 require 'open-uri'
@@ -24,7 +24,7 @@ module Mediakit
 
     def meta
       @meta ||= begin
-        raw_json = CommandWrapper::FFprobe.get_json(@path)
+        raw_json = Command::FFprobe.get_json(@path)
         Meta.new(JSON.parse(raw_json))
       end
     end

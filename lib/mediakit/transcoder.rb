@@ -1,4 +1,4 @@
-require 'mediakit/command_wrapper'
+require 'mediakit/command'
 
 module Mediakit
   class Transcoder
@@ -28,7 +28,7 @@ module Mediakit
     end
 
     def transcode
-      Mediakit::CommandWrapper::FFmpeg.execute(args)
+      Mediakit::Command::FFmpeg.execute(args)
       Mediakit::Medium.new(@output_path)
     end
 

@@ -1,5 +1,5 @@
 module Mediakit
-  module CommandWrapper
+  module Command
     class FFprobe
       class << self
         FFPROBE_COMMAND = 'ffprobe'.freeze

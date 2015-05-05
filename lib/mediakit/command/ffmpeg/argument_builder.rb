@@ -1,5 +1,5 @@
 module Mediakit
-  module CommandWrapper
+  module Command
     class FFmpeg
       class ArgumentBuilder
         def initialize(options)
