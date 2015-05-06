@@ -24,7 +24,8 @@ module Mediakit
       # @param args [String] arguments for command
       # @return result [Bool] command result
       def run(args = '')
-        Cocaine::CommandLine.new(bin, args).run
+        # TODO cocaineをやめてpopen3を用いた実装を行い、stderrをロギング出来るようにする
+        Cocaine::CommandLine.new(bin, args, swallow_stderr: true).run
       end
 
       # return command to execute
