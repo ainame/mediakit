@@ -41,7 +41,7 @@ module Mediakit
                        when 'S'
                          :subtitle
                        else
-                         'unkown'
+                         :unknown
                        end
           frame_level = match[:frame_level] != '.'
           slice_level = match[:slice_level] != '.'

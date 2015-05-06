@@ -34,15 +34,15 @@ module Mediakit
         match = line.match(PATTERN)
         if match
           type = case match[:type]
-                       when 'V'
-                         :video
-                       when 'A'
-                         :audio
-                       when 'S'
-                         :subtitle
-                       else
-                         'unkown'
-                       end
+                 when 'V'
+                   :video
+                 when 'A'
+                   :audio
+                 when 'S'
+                   :subtitle
+                 else
+                   :unknown
+                 end
           frame_leval = match[:frame_level] != '.'
           slice_leval = match[:slice_level] != '.'
           experimental = match[:experimental] != '.'

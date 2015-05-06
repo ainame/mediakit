@@ -5,6 +5,14 @@ module Mediakit
         def name
           '<%= @item.name %>'
         end
+
+        def encoders
+          <%= @item.encoders.inspect %>
+        end
+
+        def decoders
+          <%= @item.decoders.inspect %>
+        end
       end
     end
   end
