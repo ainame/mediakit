@@ -36,8 +36,8 @@ module Mediakit
                        end
           decode = match[:decode] != '.'
           encode = match[:encode] != '.'
-          decoders = match[:decoders] ? match[:decoders].split(' ') : [match[:name]]
-          encoders = match[:encoders] ? match[:encoders].split(' ') : [match[:name]]
+          decoders = match[:decoders] ? match[:decoders].split(' ') : (decode ? [match[:name]] : nil)
+          encoders = match[:encoders] ? match[:encoders].split(' ') : (encode ? [match[:name]] : nil)
           intra_frame = match[:intra_frame] != '.'
           lossy = match[:lossy] != '.'
           lossless = match[:lossless] != '.'

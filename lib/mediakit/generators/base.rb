@@ -27,25 +27,22 @@ module Mediakit
 
       def generate
         @items = parse_items(get_raw_items)
-        @items.each do |item|
-          rendered = render_template(template, item)
-          filename = path_to_write(item)
-          write(filename, rendered)
-        end
+        rendered = render_template(template)
+        filename = path_to_write
+        write(filename, rendered)
       end
 
       def parse_items(raw_items)
         raw_items.each do |line|
-          stripped_text = line.chomp.strip
-          item = create_item(stripped_text)
+          chomped_text = line.chomp
+          item = create_item(chomped_text)
           items << item if item
         end
         items
       end
 
-      def render_template(template, item)
-        return unless item
-        @item = item
+      def render_template(template)
+        return unless @items
         ERB.new(template).result(binding)
       end
 
@@ -53,12 +50,8 @@ module Mediakit
         @template ||= File.read(File.join(@root, "templates/#{item_role}.rb.erb"))
       end
 
-      def path_to_write(item)
-        if item.respond_to?(:type)
-          File.join(@root, 'lib/mediakit',item_role.pluralize, item.type.to_s, item_role + '_' + item.name + '.rb')
-        else
-          File.join(@root, 'lib/mediakit',item_role.pluralize, item_role + '_' + item.name + '.rb')
-        end
+      def path_to_write
+        File.join(@root, 'lib/mediakit',item_role.pluralize + '.rb')
       end
 
       def write(filename, body)
