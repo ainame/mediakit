@@ -3,6 +3,10 @@ require 'mediakit/command/ffmpeg/argument_builder'
 module Mediakit
   module Command
     class FFmpeg
+      DELIMITER_FOR_CODECS = "\n -------\n".freeze
+      DELIMITER_FOR_FORMATS = "\n --\n".freeze
+      DELIMITER_FOR_CODER = "\n ------\n".freeze
+
       def initialize(driver)
         @driver = driver
       end
@@ -12,19 +16,19 @@ module Mediakit
       end
 
       def codecs
-        @codecs ||= execute('-codecs').split("\n -------\n")[1].each_line.to_a
+        @codecs ||= execute('-codecs').split(DELIMITER_FOR_CODECS)[1].each_line.to_a
       end
 
       def formats
-        @formats ||= execute('-formats').split("\n --\n")[1].each_line.to_a
+        @formats ||= execute('-formats').split(DELIMITER_FOR_FORMATS)[1].each_line.to_a
       end
 
       def decoders
-        @decoders ||= execute('-decoders').split("\n ------\n")[1].each_line.to_a
+        @decoders ||= execute('-decoders').split(DELIMITER_FOR_CODER)[1].each_line.to_a
       end
 
       def encoders
-        @encoders ||= execute('-encoders').split("\n ------\n")[1].each_line.to_a
+        @encoders ||= execute('-encoders').split(DELIMITER_FOR_CODER)[1].each_line.to_a
       end
     end
   end
