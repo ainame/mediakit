@@ -8,6 +8,8 @@ module Mediakit
       end
     end
 
+    class DriverError < StandardError; end
+
     class Base
       extend Configurable
 
@@ -25,7 +27,12 @@ module Mediakit
       # @return result [Bool] command result
       def run(args = '')
         # TODO cocaineをやめてpopen3を用いた実装を行い、stderrをロギング出来るようにする
-        Cocaine::CommandLine.new(bin, args, swallow_stderr: true).run
+        begin
+          command_line = Cocaine::CommandLine.new(bin, args, swallow_stderr: true)
+          command_line.run
+        rescue => e
+          raise(DriverError, "#{self.class} catch error with command [$ #{command_line.command}] - #{e.message}, #{e.backtrace.join("\n")}")
+        end
       end
 
       # return command to execute

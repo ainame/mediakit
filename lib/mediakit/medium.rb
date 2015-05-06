@@ -5,41 +5,43 @@ require 'open-uri'
 
 module Mediakit
   class Medium
-    def initialize(path_or_url)
-      @path_or_url = path_or_url
+    CHUNK_SIZE = 1024 * 1024 * 2 # 2MB
+
+    def initialize(path)
+      @path = path
     end
 
     def data(&block)
-      bin_data = nil
+      raise('must use block interface for stooping memory error') unless block_given?
       with_file do |file|
         file.binmode
-        if block_given?
-          yield(file)
-        else
-          bin_data = file.read
-        end
+        yield(file.read(CHUNK_SIZE)) unless file.eof?
       end
-      bin_data
     end
 
     def meta
       @meta ||= begin
-        raw_json = Command::FFprobe.get_json(@path)
+        raw_json = ffprobe.get_json(@path)
         Meta.new(JSON.parse(raw_json))
+      rescue => e
+        # TODO:
+        warn "can't get meta info from #{@path} - #{e.message}, #{e.backtrace.join("\n")}"
+        nil
       end
     end
 
     # temporary implementation by OpenStruct
     class Meta < OpenStruct
-      def initialize(hash)
-        @hash = hash
-      end
     end
 
     private
+    def ffprobe
+      Command::FFprobe.new(Driver::FFprobe.new)
+    end
+
 
     def with_file(&block)
-      open(@path_or_url) do |file|
+      open(@path) do |file|
         yield(file)
       end
     end
