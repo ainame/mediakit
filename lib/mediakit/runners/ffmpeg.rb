@@ -50,7 +50,7 @@ module Mediakit
 
       def global_options(flag)
         Mediakit::Runners::FFmpeg::Options.new(
-          global_options: Mediakit::Runners::FFmpeg::Options::GlobalOptions.new(
+          global: Mediakit::Runners::FFmpeg::Options::GlobalOptions.new(
             flag => true,
           ),
         )

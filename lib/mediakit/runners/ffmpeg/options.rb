@@ -9,30 +9,30 @@ module Mediakit
       # ffmpeg [global_options] {[input_file_options] -i input_file} ... {[output_file_options] output_file} ...
       #
       class Options
-        attr_reader(:global_options, :input_pairs, :output_pair)
+        attr_reader(:global, :inputs, :output)
         # constructor
         #
-        # @param global_options [Mediakit::Runners::FFmpeg::Options::GlobalOptions]
-        # @param input_pairs [Array] array object of Mediakit::Command::FFmpeg::Options::InputPairs
-        # @param output_pair [Mediakit::Runners::FFmpeg::Options::OutputPairs]
-        def initialize(global_options:, input_pairs:, output_pair:)
-          @global_options = global_options
-          @input_pairs    = input_pairs
-          @output_pair    = output_pair
+        # @param global [Mediakit::Runners::FFmpeg::Options::GlobalOption]
+        # @param inputs [Array<Mediakit::Command::FFmpeg::Options::Inputs>] array object Mediakit::Command::FFmpeg::Options::Inputs
+        # @param output [Mediakit::Runners::FFmpeg::Options::Output]
+        def initialize(global: nil, inputs: nil, output: nil)
+          @global = global
+          @inputs = inputs
+          @output = output
         end
 
         def compose
           composed_string = ''
-          composed_string << "#{global_options}" if global_options
-          composed_string << " #{input_pairs.map(&:to_s).join(' ')}" if input_pairs && !input_pairs.empty?
-          composed_string << " #{output_pair}" if output_pair
+          composed_string << "#{global}" if global
+          composed_string << " #{inputs}" if inputs && !inputs.empty?
+          composed_string << " #{output}" if output
           composed_string
         end
 
         alias_method :to_s, :compose
 
         # Base class for Options
-        class OrderedOptions < ActiveSupport::OrderedHash
+        class OrderedHash < ActiveSupport::OrderedHash
           # initializer
           #
           # @param options [Hash] initial option values
@@ -70,13 +70,7 @@ module Mediakit
           end
         end
 
-        class GlobalOptions < OrderedOptions
-        end
-
-        class InputFileOptions < OrderedOptions
-        end
-
-        class OutputFileOptions < OrderedOptions
+        class GlobalOption < OrderedHash
         end
 
         class OptionPathPair
@@ -96,13 +90,12 @@ module Mediakit
           end
         end
 
-        class InputPair < OptionPathPair
-          # initializer for InputOptionPair class
-          #
-          # @param options [Mediakit::Transcoder::InputOptions]
+        class InputFileOption < OptionPathPair
+          # @param options [Hash] input options
           # @param path [String] input file path
           def initialize(options:, path:)
-            super
+            ordered_hash = OrderedHash.new(options)
+            super(options: ordered_hash, path: path)
           end
 
           def compose
@@ -110,18 +103,35 @@ module Mediakit
           end
         end
 
-        class OutputPair < OptionPathPair
-          # initializer for InputOptionPair class
-          #
-          # @param options [Mediakit::Transcoder::InputOptions]
-          # @param path [String] input file path
+        class OutputFileOption < OptionPathPair
+          # @param options [Hash] output options
+          # @param path [String] output file path
           def initialize(options:, path:)
-            super
+            ordered_hash = OrderedHash.new(options)
+            super(options: ordered_hash, path: path)
           end
 
           def compose
             "#{options} #{path}"
           end
+        end
+
+        class InputFileOptionCollection
+          attr_reader(:input_file_options)
+
+          # @param *input_file_options [Mediakit::Runners::FFmpeg::InputFileOptions]
+          def initialize(*input_file_options)
+            @options = input_file_options
+          end
+
+          def empty?
+            @options.empty?
+          end
+
+          def compose
+            @options.map(&:compose).join(' ')
+          end
+          alias_method :to_s, :compose
         end
 
         # see https://www.ffmpeg.org/ffmpeg.html#Stream-specifiers-1
