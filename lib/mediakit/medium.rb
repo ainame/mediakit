@@ -1,4 +1,4 @@
-require 'mediakit/command'
+require 'mediakit/runners'
 require 'json'
 require 'ostruct'
 require 'open-uri'
@@ -36,7 +36,7 @@ module Mediakit
 
     private
     def ffprobe
-      Command::FFprobe.new(Drivers::FFprobe.new)
+      Runners::FFprobe.new(Drivers::FFprobe.new)
     end
 
 

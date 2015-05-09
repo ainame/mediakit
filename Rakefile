@@ -1,13 +1,13 @@
 require "bundler/gem_tasks"
 require 'mediakit'
-require 'mediakit/driver'
-require 'mediakit/command'
+require 'mediakit/drivers'
+require 'mediakit/runners'
 require 'mediakit/generators'
 
 namespace :gen do
   def command
-    driver = Mediakit::Driver::FFmpeg.new
-    command = Mediakit::Command::FFmpeg.new(driver)
+    driver = Mediakit::Drivers::FFmpeg.new
+    command = Mediakit::Runners::FFmpeg.new(driver)
   end
 
   def root

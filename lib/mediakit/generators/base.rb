@@ -1,4 +1,4 @@
-require 'mediakit/command'
+require 'mediakit/runners'
 require 'erb'
 
 module Mediakit
@@ -6,7 +6,7 @@ module Mediakit
     class Base
       attr_reader :items
 
-      # @param command [Mediakit::Command::FFmpeg] command object to execute with ffmpeg
+      # @param command [Mediakit::Runners::FFmpeg] runners object to execute with ffmpeg
       def initialize(root, command)
         @root = root
         @command = command

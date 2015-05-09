@@ -21,24 +21,24 @@ module Mediakit
         self.class.bin_path || name
       end
 
-      # execute command and return result
+      # execute runners and return result
       #
-      # @param args [String] arguments for command
-      # @return result [Bool] command result
+      # @param args [String] arguments for runners
+      # @return result [Bool] runners result
       def run(args = '')
         # TODO cocaineをやめてpopen3を用いた実装を行い、stderrをロギング出来るようにする
         begin
-          command_line = Cocaine::CommandLine.new(bin, args, swallow_stderr: true)
+          command_line = Cocaine::CommandLine.new(bin, args)
           command_line.run
         rescue => e
-          raise(DriverError, "#{self.class} catch error with command [$ #{command_line.command}] - #{e.message}, #{e.backtrace.join("\n")}")
+          raise(DriverError, "#{self.class} catch error with runners [$ #{command_line.command}] - #{e.message}, #{e.backtrace.join("\n")}")
         end
       end
 
-      # return command to execute
+      # return runners to execute
       #
-      # @param args [String] arguments for command
-      # @return result [String] command to execute
+      # @param args [String] arguments for runners
+      # @return result [String] runners to execute
       def dry_run(args = '')
         Cocaine::CommandLine.new(bin, args).command
       end

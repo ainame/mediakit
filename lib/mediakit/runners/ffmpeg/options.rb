@@ -1,32 +1,34 @@
 require 'active_support/ordered_hash'
 
 module Mediakit
-  module Command
+  module Runners
     class FFmpeg
+      # presentation of ffmpeg runners option
+      #
+      # SYNOPSIS
+      # ffmpeg [global_options] {[input_file_options] -i input_file} ... {[output_file_options] output_file} ...
+      #
       class Options
+        attr_reader(:global_options, :input_pairs, :output_pair)
+        # constructor
         #
-        # SYNOPSIS
-        #
-        # ffmpeg [global_options] {[input_file_options] -i input_file} ... {[output_file_options] output_file} ...
-        #
-        attr_reader(:global_options, :input_pairs, :output_pairs)
-
-        # @param global_options [Mediakit::Command::FFmpeg::Options::GlobalOptions]
-        # @param input_pairs [Mediakit::Command::FFmpeg::Options::InputPairs]
-        # @param output_pairs [Mediakit::Command::FFmpeg::Options::OutputPairs]
-        def initialize(global_options:, input_pairs:, output_pairs:)
+        # @param global_options [Mediakit::Runners::FFmpeg::Options::GlobalOptions]
+        # @param input_pairs [Array] array object of Mediakit::Command::FFmpeg::Options::InputPairs
+        # @param output_pair [Mediakit::Runners::FFmpeg::Options::OutputPairs]
+        def initialize(global_options:, input_pairs:, output_pair:)
           @global_options = global_options
           @input_pairs    = input_pairs
-          @output_pairs   = output_pairs
+          @output_pair    = output_pair
         end
 
         def compose
           composed_string = ''
           composed_string << "#{global_options}" if global_options
-          composed_string << " #{input_pairs.map(&:to_s).join(' ')}" if input_pairs
-          composed_string << " #{output_pairs}" if output_pairs
+          composed_string << " #{input_pairs.map(&:to_s).join(' ')}" if input_pairs && !input_pairs.empty?
+          composed_string << " #{output_pair}" if output_pair
           composed_string
         end
+
         alias_method :to_s, :compose
 
         # Base class for Options

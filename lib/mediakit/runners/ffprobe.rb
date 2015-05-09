@@ -1,5 +1,5 @@
 module Mediakit
-  module Command
+  module Runners
     class FFprobe
       attr_reader(:driver)
 

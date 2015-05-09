@@ -1,4 +1,4 @@
-require 'mediakit/command'
+require 'mediakit/runners'
 
 module Mediakit
   class Transcoder
@@ -34,7 +34,7 @@ module Mediakit
 
     private
     def args
-      builder = Command::FFmpeg::ArgumentBuilder.new
+      builder = Runners::FFmpeg::ArgumentBuilder.new
       builder.inputs(inputs.map(&:path))
       builder.options(build_filters)
       builder.output(output_path)
