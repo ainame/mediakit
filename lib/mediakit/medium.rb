@@ -36,7 +36,7 @@ module Mediakit
 
     private
     def ffprobe
-      Command::FFprobe.new(Driver::FFprobe.new)
+      Command::FFprobe.new(Drivers::FFprobe.new)
     end
 
 

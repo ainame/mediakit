@@ -1,5 +1,5 @@
 module Mediakit
-  module Driver
+  module Drivers
     module Configurable
       attr_accessor(:bin_path)
 
