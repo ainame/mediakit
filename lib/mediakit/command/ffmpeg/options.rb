@@ -3,82 +3,33 @@ require 'active_support/ordered_hash'
 module Mediakit
   module Command
     class FFmpeg
-      module Options
+      class Options
         #
         # SYNOPSIS
         #
         # ffmpeg [global_options] {[input_file_options] -i input_file} ... {[output_file_options] output_file} ...
         #
+        attr_reader(:global_options, :input_pairs, :output_pairs)
 
-        # see https://www.ffmpeg.org/ffmpeg.html#Stream-specifiers-1
-        class StreamSpecifier
-          attr_reader(:stream_index, :stream_type, :program_id, :metadata_tag_key, :metadata_tag_value, :usable)
-          STREAM_TYPES = ['v', 'a', 's'].freeze
-
-          def initialize(stream_index: nil, stream_type: nil, program_id: nil, metadata_tag_key: nil, metadata_tag_value: nil, usable: nil)
-            raise(ArgumentError, "invalid args stream_type = #{stream_type}") if stream_type && !STREAM_TYPES.include?(stream_type)
-            @stream_index       = stream_index
-            @stream_type        = stream_type
-            @program_id         = program_id
-            @metadata_tag_key   = metadata_tag_key
-            @metadata_tag_value = metadata_tag_value
-            @usable             = usable
-          end
-
-          def to_s
-            case
-            when stream_index?, stream_type?
-              stream_specifier
-            when program?
-              program_specifier
-            when meta?
-              metadata_specifier
-            when usable?
-              usable_specifier
-            else
-              raise(RuntimeError)
-            end
-          end
-
-          private
-
-          def stream_specifier
-            [stream_type, stream_index].compact.join(':')
-          end
-
-          def program_specifier
-            ["p:#{program_id}", stream_index].compact.join(':')
-          end
-
-          def metadata_specifier
-            [metadata_tag_key, metadata_tag_value].compact.join(':')
-          end
-
-          def usable_specifier
-            'u'
-          end
-
-          def stream_index?
-            !stream_index.nil?
-          end
-
-          def stream_type?
-            !stream_type.nil?
-          end
-
-          def meta?
-            !metadata_tag_key.nil?
-          end
-
-          def program?
-            !program_id.nil?
-          end
-
-          def usable?
-            !usable.nil?
-          end
+        # @param global_options [Mediakit::Command::FFmpeg::Options::GlobalOptions]
+        # @param input_pairs [Mediakit::Command::FFmpeg::Options::InputPairs]
+        # @param output_pairs [Mediakit::Command::FFmpeg::Options::OutputPairs]
+        def initialize(global_options:, input_pairs:, output_pairs:)
+          @global_options = global_options
+          @input_pairs    = input_pairs
+          @output_pairs   = output_pairs
         end
 
+        def compose
+          composed_string = ''
+          composed_string << "#{global_options}" if global_options
+          composed_string << " #{input_pairs.map(&:to_s).join(' ')}" if input_pairs
+          composed_string << " #{output_pairs}" if output_pairs
+          composed_string
+        end
+        alias_method :to_s, :compose
+
+        # Base class for Options
         class OrderedOptions < ActiveSupport::OrderedHash
           # initializer
           #
@@ -171,21 +122,72 @@ module Mediakit
           end
         end
 
-        class Composer
-          attr_reader(:global_options, :input_pairs, :output_pairs)
+        # see https://www.ffmpeg.org/ffmpeg.html#Stream-specifiers-1
+        class StreamSpecifier
+          attr_reader(:stream_index, :stream_type, :program_id, :metadata_tag_key, :metadata_tag_value, :usable)
+          STREAM_TYPES = ['v', 'a', 's'].freeze
 
-          def initialize(global_options:, input_pairs:, output_pairs:)
-            @global_options = global_options
-            @input_pairs    = input_pairs
-            @output_pairs   = output_pairs
+          def initialize(stream_index: nil, stream_type: nil, program_id: nil, metadata_tag_key: nil, metadata_tag_value: nil, usable: nil)
+            raise(ArgumentError, "invalid args stream_type = #{stream_type}") if stream_type && !STREAM_TYPES.include?(stream_type)
+            @stream_index       = stream_index
+            @stream_type        = stream_type
+            @program_id         = program_id
+            @metadata_tag_key   = metadata_tag_key
+            @metadata_tag_value = metadata_tag_value
+            @usable             = usable
           end
 
-          def compose
-            composed_string = ''
-            composed_string << "#{global_options}" if global_options
-            composed_string << " #{input_pairs.map(&:to_s).join(' ')}" if input_pairs
-            composed_string << " #{output_pairs}" if output_pairs
-            composed_string
+          def to_s
+            case
+            when stream_index?, stream_type?
+              stream_specifier
+            when program?
+              program_specifier
+            when meta?
+              metadata_specifier
+            when usable?
+              usable_specifier
+            else
+              raise(RuntimeError)
+            end
+          end
+
+          private
+
+          def stream_specifier
+            [stream_type, stream_index].compact.join(':')
+          end
+
+          def program_specifier
+            ["p:#{program_id}", stream_index].compact.join(':')
+          end
+
+          def metadata_specifier
+            [metadata_tag_key, metadata_tag_value].compact.join(':')
+          end
+
+          def usable_specifier
+            'u'
+          end
+
+          def stream_index?
+            !stream_index.nil?
+          end
+
+          def stream_type?
+            !stream_type.nil?
+          end
+
+          def meta?
+            !metadata_tag_key.nil?
+          end
+
+          def program?
+            !program_id.nil?
+          end
+
+          def usable?
+            !usable.nil?
           end
         end
       end
