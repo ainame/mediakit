@@ -13,7 +13,7 @@ class TestMediakitDriver < Minitest::Test
   end
 
   def test_run
-    command = @driver.dry_run('-v')
+    command = @driver.command('-v')
     assert_equal('ffmpeg -v', command)
   end
 

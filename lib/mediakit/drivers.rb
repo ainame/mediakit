@@ -39,7 +39,7 @@ module Mediakit
       #
       # @param args [String] arguments for runners
       # @return result [String] runners to execute
-      def dry_run(args = '')
+      def command(args = '')
         Cocaine::CommandLine.new(bin, args).command
       end
     end
