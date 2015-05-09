@@ -3,7 +3,7 @@
 mediakit is the libraries for ffmpeg and sox backed media manipulation something.
 I've design this library for following purpose.
 
-* using fluent api
+* adapt layered architechture to various usage
 * easy testing design by separation of concern
 * help for building complex manipulation by options builder class
 
@@ -28,17 +28,47 @@ $ gem install mediakit
 This library behave command wrapper in your script.
 So it need each binary command file.
 
-* MUST latest ffmpeg
-* OPTIONAL latest sox
+* latest ffmpeg
 
 ## Usage
 
+### Low Level Usage
+
+The low level means it's near command line usage.
+This is a little bore interface for constructing options,
+but can pass certain it.
+
 ```rb
-media = Mediakit::Media.new('/path/to/mediafile')
-options = Mediakit::Transcoder::Options.new
-transcoder = Mediakit::Transcoder.new(options)
-transcoder.input(media).output('output.mp4')
+driver = Mediakit::Drivers::FFmpeg.new
+ffmpeg = Mediakit::Runners::FFmpeg.new(driver)
+
+options = Mediakit::Runners::FFmpeg::Options.new(
+  global: Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
+    't' => 100,
+    'y' => true,
+  ),
+  inputs: Mediakit::Runners::FFmpeg::Options::InputFileOptionCollection.new(
+    Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+      options: nil,
+      path:    input,
+    )
+  ),
+  output: Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
+    options: {
+      'vf' => 'crop=320:320:0:0',
+      'ar' => '44100',
+      'ab' => '128k',
+    },
+    path:    output,
+  ),
+)
+puts "$ ffmpeg #options"
+puts ffmpeg.run(options)
 ```
+
+### High Level Usage
+
+TBD
 
 ## Development
 
