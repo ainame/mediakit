@@ -1,4 +1,4 @@
-require 'mediakit/command/ffmpeg/argument_builder'
+require 'mediakit/command/ffmpeg/options'
 
 module Mediakit
   module Command
