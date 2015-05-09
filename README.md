@@ -43,17 +43,15 @@ driver = Mediakit::Drivers::FFmpeg.new
 ffmpeg = Mediakit::Runners::FFmpeg.new(driver)
 
 options = Mediakit::Runners::FFmpeg::Options.new(
-  global: Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
+  Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
     't' => 100,
     'y' => true,
   ),
-  inputs: Mediakit::Runners::FFmpeg::Options::InputFileOptionCollection.new(
-    Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
-      options: nil,
-      path:    input,
-    )
+  Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+    options: nil,
+    path:    input,
   ),
-  output: Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
+  Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
     options: {
       'vf' => 'crop=320:320:0:0',
       'ar' => '44100',

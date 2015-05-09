@@ -12,24 +12,53 @@ module Mediakit
         attr_reader(:global, :inputs, :output)
         # constructor
         #
-        # @param global [Mediakit::Runners::FFmpeg::Options::GlobalOption]
-        # @param inputs [Array<Mediakit::Command::FFmpeg::Options::Inputs>] array object Mediakit::Command::FFmpeg::Options::Inputs
-        # @param output [Mediakit::Runners::FFmpeg::Options::Output]
-        def initialize(global: nil, inputs: nil, output: nil)
-          @global = global
-          @inputs = inputs
-          @output = output
+        # @option args [Mediakit::Runners::FFmpeg::Options::GlobalOption]
+        # @option args [Array<Mediakit::Command::FFmpeg::Options::InputFileOption>] array object Mediakit::Command::FFmpeg::Options::InputOption
+        # @option args [Mediakit::Runners::FFmpeg::Options::OutputFileOption]
+        def initialize(*args)
+          @global, @inputs, @output = nil, [], nil
+          args.each do |option|
+            add_option(option)
+          end
+        end
+
+        def add_option(option)
+          return if option.nil?
+          case option
+          when GlobalOption
+            set_global(option)
+          when InputFileOption
+            add_input(option)
+          when OutputFileOption
+            set_output(option)
+          else
+            raise(ArgumentError)
+          end
         end
 
         def compose
           composed_string = ''
           composed_string << "#{global}" if global
-          composed_string << " #{inputs}" if inputs && !inputs.empty?
+          composed_string << " #{inputs.map(&:compose).join(' ')}" if inputs && !inputs.empty?
           composed_string << " #{output}" if output
           composed_string
         end
 
         alias_method :to_s, :compose
+
+        private
+
+        def set_global(global)
+          @global = global
+        end
+
+        def add_input(input)
+          @inputs.push(input)
+        end
+
+        def set_output(output)
+          @output = output
+        end
 
         # Base class for Options
         class OrderedHash < ActiveSupport::OrderedHash
@@ -37,7 +66,7 @@ module Mediakit
           #
           # @param options [Hash] initial option values
           def initialize(options = {})
-            options.each { |key, value| raise_if_invalid_arg_error(key, value) }
+            options.each { |key, value| raise_if_invalid_arg_error(key, value) } if options
             self.merge!(options) if options && options.kind_of?(Hash)
           end
 
@@ -131,6 +160,7 @@ module Mediakit
           def compose
             @options.map(&:compose).join(' ')
           end
+
           alias_method :to_s, :compose
         end
 

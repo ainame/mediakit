@@ -25,16 +25,25 @@ class TestMediakitCommandFfmpegOptions < Minitest::Test
      end
   end
 
-  def test_input_pair
+  def test_input_file_option
     option = Mediakit::Runners::FFmpeg::Options::InputFileOption.new(options: {b: '1000k'}, path: 'test.mp4')
     assert_equal('-b 1000k -i test.mp4', option.compose)
     assert_equal('-b 1000k -i test.mp4', option.to_s)
   end
 
-  def test_output_pair
+  def test_output_file_option
     option = Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(options: {b: '1000k'}, path: 'test.mp4')
     assert_equal('-b 1000k test.mp4', option.compose)
     assert_equal('-b 1000k test.mp4', option.to_s)
+  end
+
+  def test_option
+    global = Mediakit::Runners::FFmpeg::Options::GlobalOption.new(t: 100.0)
+    input = Mediakit::Runners::FFmpeg::Options::InputFileOption.new(options: {b: '1000k'}, path: 'in.mp4')
+    output = Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(options: {b: '1000k'}, path: 'out.mp4')
+    options = Mediakit::Runners::FFmpeg::Options.new(global, input, output)
+    assert_equal('-t 100.0 -b 1000k -i in.mp4 -b 1000k out.mp4', options.compose)
+    assert_equal('-t 100.0 -b 1000k -i in.mp4 -b 1000k out.mp4', options.to_s)
   end
 
   def test_stream_specifier
