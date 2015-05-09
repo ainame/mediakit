@@ -3,9 +3,15 @@
 mediakit is the libraries for ffmpeg and sox backed media manipulation something.
 I've design this library for following purpose.
 
-* adapt layered architechture to various usage
+* have low and high level interfaces as you like use
 * easy testing design by separation of concern
-* help for building complex manipulation by options builder class
+
+## Development Plan
+
+* [x] low-level interface for ffmpeg
+* [ ] high-level interface for ffmpeg
+* [ ] low-level interface for sox
+* [ ] high-level interface for sox
 
 ## Installation
 
@@ -28,7 +34,7 @@ $ gem install mediakit
 This library behave command wrapper in your script.
 So it need each binary command file.
 
-* latest ffmpeg
+* latest ffmpeg which have ffprobe command
 
 ## Usage
 
