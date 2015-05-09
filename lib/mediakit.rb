@@ -8,4 +8,5 @@ module Mediakit
   require 'mediakit/encoders'
   require 'mediakit/decoders'
   require 'mediakit/formats'
+  require 'mediakit/workspace'
 end
