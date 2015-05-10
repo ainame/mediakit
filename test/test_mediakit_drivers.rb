@@ -1,7 +1,7 @@
 require 'minitest_helper'
 require 'mediakit/drivers'
 
-class TestMediakitDriver < Minitest::Test
+class TestMediakitDrivers < Minitest::Test
   def setup
     @driver = Mediakit::Drivers::FFmpeg.new
   end
@@ -20,7 +20,7 @@ class TestMediakitDriver < Minitest::Test
   def test_configure
     proc = proc do
       Mediakit::Drivers::FFmpeg.configure do |conf|
-        conf.bin_path = '/usr/bin/ffmpeg'
+        conf.bin_path = File.join(TestContext.root,'test/supports/ffmpeg')
       end
     end
 
@@ -33,6 +33,12 @@ class TestMediakitDriver < Minitest::Test
       assert_nil(error)
     end
 
-    assert_equal('/usr/bin/ffmpeg', Mediakit::Drivers::FFmpeg.bin_path)
+    assert_equal(
+      File.join(TestContext.root,'test/supports/ffmpeg'),
+      Mediakit::Drivers::FFmpeg.bin_path
+    )
+
+    driver = Mediakit::Drivers::FFmpeg.new
+    assert(driver.run('-version'))
   end
 end

@@ -5,4 +5,6 @@
 require 'shellwords'
 
 path = Shellwords.escape(ARGV.last)
-`touch #{path}`
+if path !~ /^-/
+  `touch #{path}`
+end
