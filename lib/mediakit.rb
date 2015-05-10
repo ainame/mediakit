@@ -2,5 +2,6 @@ require "mediakit/version"
 
 module Mediakit
   require 'mediakit/drivers'
-  require 'mediakit/runners'
+  require 'mediakit/ffmpeg'
+  require 'mediakit/ffprobe'
 end

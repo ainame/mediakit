@@ -5,20 +5,20 @@ require "mediakit"
 require 'pry'
 
 def transcode_option(input, output)
-  options = Mediakit::Runners::FFmpeg::Options.new(
-    Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
+  options = Mediakit::FFmpeg::Options.new(
+    Mediakit::FFmpeg::Options::GlobalOption.new(
       't' => 100,
       'y' => true,
     ),
-    Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+    Mediakit::FFmpeg::Options::InputFileOption.new(
       options: nil,
       path:    input,
     ),
-    Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+    Mediakit::FFmpeg::Options::InputFileOption.new(
       options: nil,
       path:    input,
     ),
-    Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
+    Mediakit::FFmpeg::Options::OutputFileOption.new(
       options: {
         'vf' => 'crop=320:320:0:0',
         'ar' => '44100',
@@ -33,7 +33,7 @@ root        = File.expand_path(File.join(File.dirname(__FILE__), '../'))
 input_path  = File.expand_path(File.join(root, 'test/fixtures/sample1.mp4'))
 output_path = File.expand_path(File.join(root, 'out.mp4'))
 driver      = Mediakit::Drivers::FFmpeg.new
-ffmpeg      = Mediakit::Runners::FFmpeg.new(driver)
+ffmpeg      = Mediakit::FFmpeg.new(driver)
 options     = transcode_option(input_path, output_path)
-puts "$ ffmpeg #{options}"
+puts "$ #{ffmpeg.command(options)}"
 puts ffmpeg.run(options)
