@@ -46,18 +46,18 @@ but can pass certain it.
 
 ```rb
 driver = Mediakit::Drivers::FFmpeg.new
-ffmpeg = Mediakit::Runners::FFmpeg.new(driver)
+ffmpeg = Mediakit::FFmpeg.new(driver)
 
-options = Mediakit::Runners::FFmpeg::Options.new(
-  Mediakit::Runners::FFmpeg::Options::GlobalOption.new(
+options = Mediakit::FFmpeg::Options.new(
+  Mediakit::FFmpeg::Options::GlobalOption.new(
     't' => 100,
     'y' => true,
   ),
-  Mediakit::Runners::FFmpeg::Options::InputFileOption.new(
+  Mediakit::FFmpeg::Options::InputFileOption.new(
     options: nil,
     path:    input,
   ),
-  Mediakit::Runners::FFmpeg::Options::OutputFileOption.new(
+  Mediakit::FFmpeg::Options::OutputFileOption.new(
     options: {
       'vf' => 'crop=320:320:0:0',
       'ar' => '44100',
@@ -66,7 +66,7 @@ options = Mediakit::Runners::FFmpeg::Options.new(
     path:    output,
   ),
 )
-puts "$ ffmpeg #options"
+puts "$ #{ffmpeg.command(options)}"
 puts ffmpeg.run(options)
 ```
 
