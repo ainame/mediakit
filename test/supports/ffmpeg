@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+#
+# this script is the stub command for testing
+#
+require 'shellwords'
+
+path = Shellwords.escape(ARGV.last)
+`touch #{path}`
