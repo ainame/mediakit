@@ -25,7 +25,7 @@ EOS
   spec.add_runtime_dependency "cocaine", "~> 0.5.7"
   spec.add_runtime_dependency "activesupport", "~> 4"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "pry", "~> 0.10"
+  spec.add_development_dependency "pry", '~> 0.10'
   spec.add_development_dependency "ruby-debug-ide", "~> 0.4"
   spec.add_development_dependency "yard", "> 0.8"
 end

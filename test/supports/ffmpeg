@@ -2,9 +2,35 @@
 #
 # this script is the stub command for testing
 #
+require 'slop'
 require 'shellwords'
 
+options = Slop.parse do
+  on 's=', 'sleep=', 'sleep command', as: Integer
+  on 'p', 'progress', 'output progress banner to stdout'
+  on 'f', 'fail', 'fail to exit'
+end.to_hash
+
+def exit_with_option(result, force)
+  exit(1) if force
+  exit(result)
+end
+
 path = Shellwords.escape(ARGV.last)
-if path !~ /^-/
+if path !~ /^-/ && options.to_hash.empty?
   `touch #{path}`
 end
+
+if options[:sleep]
+  time = options[:sleep].to_f
+  while time > 0
+    STDOUT.write(sprintf("@OUT %f - %s\n", time, Time.now)) if options[:progress]
+    STDERR.write(sprintf("@ERR %f - %s\n", time, Time.now)) if options[:progress]
+    STDOUT.flush
+    STDERR.flush
+    time -= 0.1
+    sleep(0.1)
+  end
+end
+
+exit_with_option(0, options[:fail])
