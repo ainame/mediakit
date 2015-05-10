@@ -4,6 +4,7 @@ require 'mediakit/utils/popen_helper'
 module Mediakit
   module Drivers
     class DriverError < StandardError; end
+    class FailError < DriverError; end
     class ConfigurationError < DriverError; end
 
     class Base
@@ -32,11 +33,11 @@ module Mediakit
       def run(*args)
         begin
           escaped_args = Mediakit::Utils::PopenHelper.escape(*args)
-          Mediakit::Utils::PopenHelper.run(bin, escaped_args)
+          stdout, stderr, exit_status = Mediakit::Utils::PopenHelper.run(bin, escaped_args)
+          raise(FailError, stderr) unless exit_status
+          stdout
         rescue Mediakit::Utils::PopenHelper::CommandNotFoundError => e
           raise(ConfigurationError, "cant' find bin in #{bin}.")
-        rescue => e
-          raise(DriverError, "#{self.class} catch error with command(#{Mediakit::Utils::PopenHelper.command(bin,escaped_args)}) - #{e.message}, #{e.backtrace.join("\n")}")
         end
       end
 
@@ -68,8 +69,8 @@ module Mediakit
           escaped_args = Mediakit::Utils::PopenHelper.escape(args.dup)
           command_line = Cocaine::CommandLine.new(bin, escaped_args, swallow_stderr: true)
           command_line.run
-        rescue => e
-          raise(DriverError, "#{self.class} catch error with runners [$ #{command_line.command}] - #{e.message}, #{e.backtrace.join("\n")}")
+        rescue Cocaine::ExitStatusError => e
+          raise(FailError, e.message)
         end
       end
 

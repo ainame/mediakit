@@ -1,14 +1,12 @@
-require 'mediakit/ffmpeg/options'
 require 'mediakit/drivers'
+require 'mediakit/ffmpeg/options'
+require 'mediakit/ffmpeg/introspection'
 
 module Mediakit
   class FFmpeg
-    class FFmpegError < StandardError;
-    end
+    include Introspection
+    class FFmpegError < StandardError; end
 
-    DELIMITER_FOR_CODECS  = "\n -------\n".freeze
-    DELIMITER_FOR_FORMATS = "\n --\n".freeze
-    DELIMITER_FOR_CODER   = "\n ------\n".freeze
 
     def initialize(driver)
       @driver = driver
@@ -27,34 +25,10 @@ module Mediakit
       @driver.command(args)
     end
 
-    def codecs
-      @codecs ||= run(global_options('codecs')).split(DELIMITER_FOR_CODECS)[1].each_line.to_a
-    end
-
-    def formats
-      @formats ||= run(global_options('formats')).split(DELIMITER_FOR_FORMATS)[1].each_line.to_a
-    end
-
-    def decoders
-      @decoders ||= run(global_options('decoders')).split(DELIMITER_FOR_CODER)[1].each_line.to_a
-    end
-
-    def encoders
-      @encoders ||= run(global_options('encoders')).split(DELIMITER_FOR_CODER)[1].each_line.to_a
-    end
-
     private
 
     def execute(args = '')
       @driver.run(args)
-    end
-
-    def global_options(flag)
-      Mediakit::FFmpeg::Options.new(
-        Mediakit::FFmpeg::Options::GlobalOptions.new(
-          flag => true,
-        ),
-      )
     end
   end
 end
