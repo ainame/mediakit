@@ -46,11 +46,7 @@ module Mediakit
     private
 
     def execute(args = '')
-      begin
-        @driver.run(args)
-      rescue Drivers::DriverError => e
-        raise(FFmpegError, "#catch driver's error - #{e.message}, #{e.backtrace.join("\n")}")
-      end
+      @driver.run(args)
     end
 
     def global_options(flag)

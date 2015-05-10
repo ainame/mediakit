@@ -10,11 +10,7 @@ module Mediakit
     end
 
     def execute(args = '')
-      begin
-        driver.run(args)
-      rescue => e
-        raise(FFprobeError, "#{self.class} catch error - #{e.message}, #{e.backtrace.join("\n")}")
-      end
+      driver.run(args)
     end
 
     def get_json(path)
