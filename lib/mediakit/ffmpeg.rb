@@ -14,7 +14,7 @@ module Mediakit
 
     # execute runners with options object
     #
-    # @param options [Mediakit::Runners::FFmpeg::Options] options object to create CLI argument
+    # @param [Mediakit::Runners::FFmpeg::Options] options options to create CLI argument
     def run(options)
       args = options.compose
       execute(args)

@@ -8,7 +8,6 @@ module Mediakit
       class CommandNotFoundError < StandardError;
       end
 
-      # @option timeout [Integer] timeout time by second
       def initialize(timeout: nil)
         @timeout = timeout
       end

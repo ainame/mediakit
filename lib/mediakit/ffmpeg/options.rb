@@ -119,8 +119,8 @@ module Mediakit
       end
 
       class InputFileOption < OptionPathPair
-        # @param options [Hash] input options
-        # @param path [String] input file path
+        # @param [Hash] :options input options
+        # @param [String] :path input file path
         def initialize(options:, path:)
           ordered_hash = OrderedHash.new(options)
           super(options: ordered_hash, path: path)
@@ -132,8 +132,8 @@ module Mediakit
       end
 
       class OutputFileOption < OptionPathPair
-        # @param options [Hash] output options
-        # @param path [String] output file path
+        # @param [Hash] :options output options
+        # @param [String] :path output file path
         def initialize(options:, path:)
           ordered_hash = OrderedHash.new(options)
           super(options: ordered_hash, path: path)
@@ -142,25 +142,6 @@ module Mediakit
         def compose
           "#{options} #{path}"
         end
-      end
-
-      class InputFileOptionCollection
-        attr_reader(:input_file_options)
-
-        # @param *input_file_options [Mediakit::FFmpeg::InputFileOptions]
-        def initialize(*input_file_options)
-          @options = input_file_options
-        end
-
-        def empty?
-          @options.empty?
-        end
-
-        def compose
-          @options.map(&:compose).join(' ')
-        end
-
-        alias_method :to_s, :compose
       end
 
       class QuoteString
