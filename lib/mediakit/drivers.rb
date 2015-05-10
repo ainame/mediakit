@@ -127,12 +127,15 @@ module Mediakit
       end
     end
 
+    # factory class for ffmpeg driver
     class FFmpeg < AbstractFactory
     end
 
+    # factory class for ffprobe driver
     class FFprobe < AbstractFactory
     end
 
+    # factory class for sox driver
     class Sox < AbstractFactory
     end
   end
