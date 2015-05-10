@@ -3,9 +3,14 @@ require 'open3'
 
 module Mediakit
   module Utils
-    module PopenHelper
+    class ProcessRunner
 
       class CommandNotFoundError < StandardError;
+      end
+
+      # @option timeout [Integer] timeout time by second
+      def initialize(timeout: nil)
+        @timeout = timeout
       end
 
       # @overload run(command, *args)
@@ -18,7 +23,7 @@ module Mediakit
       # @return err [String] stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
-        command = command(bin, *args)
+        command = self.class.command(bin, *args)
 
         out, err, exit_status = nil
         begin
@@ -35,34 +40,27 @@ module Mediakit
         [out, err, exit_status]
       end
 
-      module_function(:run)
-
-      def command(bin, *args)
+      def self.command(bin, *args)
         escaped_args = escape(*args)
         "#{bin} #{escaped_args}"
       end
 
-      module_function(:command)
-
-      def escape(*args)
+      def self.escape(*args)
         case args.size
         when 1
-          _escape_with_split(args[0])
+          escape_with_split(args[0])
         else
           Shellwords.join(args.map { |x| Shellwords.escape(x) })
         end
       end
 
-      module_function(:escape)
+      private
 
-      def _escape_with_split(string)
+      def self.escape_with_split(string)
         splits = Shellwords.split(string)
         splits = splits.map { |x| Shellwords.escape(x) }
         splits.join(' ')
       end
-
-      module_function(:_escape_with_split)
-
     end
   end
 end

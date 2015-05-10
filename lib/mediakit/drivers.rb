@@ -1,5 +1,5 @@
 require 'shellwords'
-require 'mediakit/utils/popen_helper'
+require 'mediakit/utils/process_runner'
 
 module Mediakit
   module Drivers
@@ -27,16 +27,19 @@ module Mediakit
       #
       # @overload run(args)
       #   @param args [String] arguments for command
-      # @overload run(*args)
+      # @overload run(*args, options)
       #   @param args [Array] arguments for command
+      #   @option options [Hash] run options
       # @return result [Bool] runners result
       def run(*args)
+        options = (args.last && args.last.kind_of?(Hash)) ? args.pop : {}
         begin
-          escaped_args = Mediakit::Utils::PopenHelper.escape(*args)
-          stdout, stderr, exit_status = Mediakit::Utils::PopenHelper.run(bin, escaped_args)
+          escaped_args = Mediakit::Utils::ProcessRunner.escape(*args)
+          runner = Mediakit::Utils::ProcessRunner.new(options)
+          stdout, stderr, exit_status = runner.run(bin, escaped_args)
           raise(FailError, stderr) unless exit_status
           stdout
-        rescue Mediakit::Utils::PopenHelper::CommandNotFoundError => e
+        rescue Mediakit::Utils::ProcessRunner::CommandNotFoundError => e
           raise(ConfigurationError, "cant' find bin in #{bin}.")
         end
       end
@@ -49,7 +52,7 @@ module Mediakit
       #   @param args [Array] arguments for command
       # @return result [String] runners to execute
       def command(*args)
-        escaped_args = Mediakit::Utils::PopenHelper.escape(*args)
+        escaped_args = Mediakit::Utils::ProcessRunner.escape(*args)
         "#{bin} #{escaped_args}"
       end
     end
@@ -59,14 +62,15 @@ module Mediakit
       #
       # @overload run(args)
       #   @param args [String] arguments for command
-      # @overload run(*args)
+      # @overload run(*args, options)
       #   @param args [Array] arguments for command
+      #   @option options [Hash] run options
       # @return result [Bool] runners result
       def run(args = '')
         begin
           # Force escape args string on here,
           # because this design can't use Cocaine::CommandLine's safety solution.
-          escaped_args = Mediakit::Utils::PopenHelper.escape(args.dup)
+          escaped_args = Mediakit::Utils::ProcessRunner.escape(args.dup)
           command_line = Cocaine::CommandLine.new(bin, escaped_args, swallow_stderr: true)
           command_line.run
         rescue Cocaine::ExitStatusError => e
