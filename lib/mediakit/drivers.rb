@@ -26,11 +26,11 @@ module Mediakit
       # execute command and return result
       #
       # @overload run(args)
-      #   @param args [String] arguments for command
+      #   @param [String] args string argument for command
       # @overload run(*args, options)
-      #   @param args [Array] arguments for command
-      #   @option options [Hash] run options
-      # @return result [Bool] runners result
+      #   @param [Array] args arguments for command
+      #   @option [Hash] options run options
+      # @return [Bool] stdout output
       def run(*args)
         options = (args.last && args.last.kind_of?(Hash)) ? args.pop : {}
         begin
@@ -50,7 +50,7 @@ module Mediakit
       #   @param args [String] arguments for command
       # @overload run(*args)
       #   @param args [Array] arguments for command
-      # @return result [String] runners to execute
+      # @return [String] command
       def command(*args)
         escaped_args = Mediakit::Utils::ProcessRunner.escape(*args)
         "#{bin} #{escaped_args}"
@@ -65,7 +65,7 @@ module Mediakit
       # @overload run(*args, options)
       #   @param args [Array] arguments for command
       #   @option options [Hash] run options
-      # @return result [Bool] runners result
+      # @return [Bool] stdout output
       def run(args = '')
         begin
           # Force escape args string on here,
@@ -84,7 +84,7 @@ module Mediakit
       #   @param args [String] arguments for command
       # @overload run(*args)
       #   @param args [Array] arguments for command
-      # @return result [String] runners to execute
+      # @return [String] command commands to execute
       def command(args = '')
         Cocaine::CommandLine.new(bin, args).command
       end

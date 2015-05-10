@@ -9,11 +9,10 @@ module Mediakit
     #
     class Options
       attr_reader(:global, :inputs, :output)
-      # constructor
-      #
-      # @option args [Mediakit::FFmpeg::Options::GlobalOption]
-      # @option args [Array<Mediakit::FFmpeg::Options::InputFileOption>] array object Mediakit::FFmpeg::Options::InputOption
-      # @option args [Mediakit::FFmpeg::Options::OutputFileOption]
+
+      # @option [Mediakit::FFmpeg::Options::GlobalOption] args option
+      # @option [Mediakit::FFmpeg::Options::InputFileOption] args Mediakit::FFmpeg::Options::InputOption
+      # @option [Mediakit::FFmpeg::Options::OutputFileOption] args output file option
       def initialize(*args)
         @global, @inputs, @output = nil, [], nil
         args.each do |option|
@@ -61,9 +60,7 @@ module Mediakit
 
       # Base class for Options
       class OrderedHash < ActiveSupport::OrderedHash
-        # initializer
-        #
-        # @param options [Hash] initial option values
+        # @param [Hash] options initial option values
         def initialize(options = {})
           options.each { |key, value| raise_if_invalid_arg_error(key, value) } if options
           self.merge!(options) if options && options.kind_of?(Hash)
