@@ -46,6 +46,16 @@ class TestMediakitFfmpegOptions < Minitest::Test
     assert_equal('-t 100.0 -b 1000k -i in.mp4 -b 1000k out.mp4', options.to_s)
   end
 
+  def test_quote_string
+    option = Mediakit::FFmpeg::Options::OutputFileOption.new(
+      options: {
+        filter_complex: Mediakit::FFmpeg::Options::QuoteString.new("something"),
+      },
+      path: 'out.mp4'
+    )
+    assert_equal('-filter_complex "something" out.mp4', option.to_s)
+  end
+
   def test_stream_specifier
     stream_specifier = Mediakit::FFmpeg::Options::StreamSpecifier.new(stream_index: 1)
     assert_equal('1', stream_specifier.to_s)

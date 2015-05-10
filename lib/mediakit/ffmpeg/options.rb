@@ -163,6 +163,16 @@ module Mediakit
         alias_method :to_s, :compose
       end
 
+      class QuoteString
+        def initialize(string)
+          @string = string
+        end
+
+        def to_s
+          "\"#{@string}\""
+        end
+      end
+
       # see https://www.ffmpeg.org/ffmpeg.html#Stream-specifiers-1
       class StreamSpecifier
         attr_reader(:stream_index, :stream_type, :program_id, :metadata_tag_key, :metadata_tag_value, :usable)
