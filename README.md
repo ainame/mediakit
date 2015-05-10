@@ -1,5 +1,7 @@
 # Mediakit
 
+[![Build Status](https://travis-ci.org/ainame/mediakit.svg)](https://travis-ci.org/ainame/mediakit)
+
 mediakit is the libraries for ffmpeg and sox backed media manipulation something.
 I've design this library for following purpose.
 
