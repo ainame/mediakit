@@ -8,7 +8,10 @@ I've design this library for following purpose.
 
 ## Development Plan
 
+Currently under development.
+
 * [x] low-level interface for ffmpeg
+* [ ] low-level interface's basic feature
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
 * [ ] high-level interface for sox
