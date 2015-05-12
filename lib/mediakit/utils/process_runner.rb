@@ -94,16 +94,13 @@ module Mediakit
         end
 
         def finish
-          p 'ioreader thread join'
           @thread.join
-          p 'ioreader thread kill'
           @thread.kill
         end
 
         private
         def start
           @thread = Thread.new { read }
-          p "priority #{@thread.priority} - #{self}"
           nil
         end
 
