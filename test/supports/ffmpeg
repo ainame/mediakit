@@ -6,7 +6,7 @@ require 'slop'
 require 'shellwords'
 
 options = Slop.parse do
-  on 's=', 'sleep=', 'sleep command', as: Integer
+  on 's=', 'sleep=', 'sleep command', as: Numeric
   on 'p', 'progress', 'output progress banner to stdout'
   on 'f', 'fail', 'fail to exit'
 end.to_hash
