@@ -139,7 +139,7 @@ module Mediakit
           @current_thread = current_thread
           @watch_thread = Thread.new do
             loop do
-              if status == 'run' && timeout?
+              if timeout?
                 @current_thread.raise(Timeout::Error, "wait timeout error with #{duration} sec.")
               end
               sleep(0.1)
