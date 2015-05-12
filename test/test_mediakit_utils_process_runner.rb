@@ -9,17 +9,31 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
 
   def test_timeout_error
     # error with read timeout
+    puts <<EOS
+    assert_raises(Timeout::Error) do
+      runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+      runner.run(@bin, '--sleep=0.5')
+    end
+EOS
     assert_raises(Timeout::Error) do
       runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
       runner.run(@bin, '--sleep=0.5')
     end
 
     # no timeout error wtih output
+    puts <<EOS
+    runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+    runner.run(@bin, '--sleep=0.5 --progress')
+EOS
     runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
     runner.run(@bin, '--sleep=0.5 --progress')
   end
 
   def test_return_values
+    puts <<EOS
+    runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+    out, err, status = runner.run(@bin, '--sleep=0.1 --progress')
+EOS
     runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
     out, err, status = runner.run(@bin, '--sleep=0.1 --progress')
     assert(out)
