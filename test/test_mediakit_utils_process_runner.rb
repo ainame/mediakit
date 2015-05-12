@@ -3,29 +3,33 @@ require 'minitest_helper'
 class TestMediakitUtilsProcessRunner < Minitest::Test
   def setup
     @bin = File.join(TestContext.root, 'test/supports/ffmpeg')
-    @runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.2)
-  end
-
-  def teardown
-    @runner = nil
+    STDOUT.sync = true
+    STDERR.sync = true
   end
 
   def test_timeout_error
     # error with read timeout
     assert_raises(Timeout::Error) do
-      @runner.run(@bin, '--sleep=0.3')
+      runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+      runner.run(@bin, '--sleep=0.5')
     end
 
     # no timeout error wtih output
-    @runner.run(@bin, '--sleep=0.3 --progress')
+    runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+    runner.run(@bin, '--sleep=0.5 --progress')
   end
 
   def test_return_values
-    out, err, status = @runner.run(@bin, '--sleep=0.1 --progress')
+    runner = Mediakit::Utils::ProcessRunner.new(timeout: 0.3)
+    out, err, status = runner.run(@bin, '--sleep=0.1 --progress')
     assert(out)
     assert(out.kind_of?(String))
     assert(err.kind_of?(String))
     assert(status == true)
+  end
+
+  def test_aaaaaaaaaaaaaaaaaaaa
+    system(@bin +  ' --sleep=1.0 --progress')
   end
 
   def test_escape

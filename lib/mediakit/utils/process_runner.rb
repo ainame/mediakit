@@ -39,16 +39,20 @@ module Mediakit
           out_reader = IOReader.new(stdout) { |chunk| watch.update }
           err_reader = IOReader.new(stderr) { |chunk| watch.update }
 
+          puts 'wati_thr.join'
           wait_thr.join
           exit_status = (wait_thr.value.exitstatus == 0)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         rescue Timeout::Error => error
+          puts 'raise timeout'
           Process.kill('SIGKILL', pid)
           raise(error)
         ensure
-          out_reader.finish
-          err_reader.finish
+          puts 'eunsure'
+          # exists nil when raised before initialize variables
+          out_reader.finish if out_reader
+          err_reader.finish if err_reader
           watch.finish
         end
 
@@ -83,26 +87,32 @@ module Mediakit
         def initialize(io, &block)
           raise(ArgumentError) unless block_given?
           @io = io
+          @io.sync = true
           @data = ''
           @block = block
           start
         end
 
         def finish
+          p 'ioreader thread join'
           @thread.join
+          p 'ioreader thread kill'
           @thread.kill
         end
 
         private
         def start
           @thread = Thread.new { read }
+          p "priority #{@thread.priority} - #{self}"
           nil
         end
 
         def read
           return if @io.closed?
           begin
+            p 'read'
             while chunk = @io.gets
+              puts chunk
               @data << chunk
               @block.call(chunk) if @block
             end
@@ -129,7 +139,7 @@ module Mediakit
           @current_thread = current_thread
           @watch_thread = Thread.new do
             loop do
-              if timeout?
+              if status == 'run' && timeout?
                 @current_thread.raise(Timeout::Error, "wait timeout error with #{duration} sec.")
               end
               sleep(0.1)
