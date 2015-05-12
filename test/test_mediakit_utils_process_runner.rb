@@ -28,10 +28,6 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
     assert(status == true)
   end
 
-  def test_aaaaaaaaaaaaaaaaaaaa
-    system(@bin +  ' --sleep=1.0 --progress')
-  end
-
   def test_escape
     assert_equal("a\\;b", Mediakit::Utils::ProcessRunner.escape("a;b"))
   end
