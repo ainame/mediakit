@@ -107,7 +107,6 @@ module Mediakit
         def read
           return if @io.closed?
           begin
-            p 'read'
             while chunk = @io.gets
               puts chunk
               @data << chunk
