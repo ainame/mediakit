@@ -4,9 +4,10 @@
 #
 require 'slop'
 require 'shellwords'
+require 'digest'
 
 options = Slop.parse do
-  on 's=', 'sleep=', 'sleep command', as: Integer
+  on 's=', 'sleep=', 'sleep command', as: Numeric
   on 'p', 'progress', 'output progress banner to stdout'
   on 'f', 'fail', 'fail to exit'
 end.to_hash
@@ -22,10 +23,11 @@ if path !~ /^-/ && options.to_hash.empty?
 end
 
 if options[:sleep]
+  id = Digest::MD5.hexdigest(rand(10000).to_s)[0..5]
   time = options[:sleep].to_f
   while time > 0
-    STDOUT.write(sprintf("@OUT %f - %s\n", time, Time.now)) if options[:progress]
-    STDERR.write(sprintf("@ERR %f - %s\n", time, Time.now)) if options[:progress]
+    STDOUT.write(sprintf("@OUT[%s] %f - %s\n", id, time, Time.now)) if options[:progress]
+    STDERR.write(sprintf("@ERR[%s] %f - %s\n", id, time, Time.now)) if options[:progress]
     STDOUT.flush
     STDERR.flush
     time -= 0.1

@@ -1,7 +1,8 @@
 language: ruby
+cache:
+  bundler: true
 rvm:
   - 2.2.0
 before_install:
-  - gem update --system
-  - gem update bundler
+  - bundler --version
   - gem --version
