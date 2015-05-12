@@ -28,7 +28,7 @@ module Mediakit
       def run(bin, *args)
         command = self.class.command(bin, *args)
 
-        pid, out, err, exit_status = nil
+        pid, exit_status = nil
         out_reader, err_reader = nil
         watch = TimeoutWatch.new(@timeout)
         begin
