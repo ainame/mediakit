@@ -10,12 +10,23 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
     @runner = nil
   end
 
-  def test_timeout
+  def test_timeout_error
+    # error with read timeout
     assert_raises(Timeout::Error) do
       @runner.run(@bin, '--sleep=3')
     end
 
+    # no timeout error wtih output
     @runner.run(@bin, '--sleep=3 --progress')
+  end
+
+  def test_return_values
+    # no timeout error wtih output
+    out, err, status = @runner.run(@bin, '--sleep=1 --progress')
+    assert(out)
+    assert(out.kind_of?(String))
+    assert(err.kind_of?(String))
+    assert(status == true)
   end
 
   def test_escape
