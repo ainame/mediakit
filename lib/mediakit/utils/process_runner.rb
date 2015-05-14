@@ -30,7 +30,7 @@ module Mediakit
 
         pid, exit_status = nil
         out_reader, err_reader = nil
-        watch = TimeoutWatch.new(@timeout)
+        watch = TimeoutTimer.new(@timeout)
         begin
           stdin, stdout, stderr, wait_thr = Open3.popen3(command)
           stdin.close
@@ -122,7 +122,7 @@ module Mediakit
 
       # watch process progress by io.
       # when wait time exceed duration, then kill process.
-      class TimeoutWatch
+      class TimeoutTimer
         attr_reader(:duration)
 
         def initialize(duration)
