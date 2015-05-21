@@ -12,8 +12,9 @@ module Mediakit
       class TimeoutError < StandardError;
       end
 
-      def initialize(timeout: nil)
+      def initialize(timeout: nil, nice: 0)
         @timeout = timeout
+        @nice = nice
       end
 
       # @overload run(command, *args)
@@ -26,7 +27,7 @@ module Mediakit
       # @return err [String] stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
-        command = self.class.command(bin, *args)
+        puts command = build_command(bin, *args)
 
         pid, exit_status = nil
         out_reader, err_reader = nil
@@ -59,8 +60,17 @@ module Mediakit
         [out_reader.data, err_reader.data, exit_status]
       end
 
-      def self.command(bin, *args)
-        escaped_args = escape(*args)
+      def build_command(bin, *args)
+        command = build_command_without_options(bin, *args)
+        unless @nice == 0
+          "nice -n #{@nice} sh -c \"#{command}\""
+        else
+          command
+        end
+      end
+
+      def build_command_without_options(bin, *args)
+        escaped_args = self.class.escape(*args)
         "#{bin} #{escaped_args}"
       end
 
