@@ -1,8 +1,8 @@
-require 'shellwords'
 require 'open3'
 require 'thread'
 require 'timeout'
 require 'cool.io'
+require 'mediakit/utils/shell_escape'
 
 module Mediakit
   module Utils
@@ -59,33 +59,16 @@ module Mediakit
 
       def build_command(bin, *args)
         command = build_command_without_options(bin, *args)
-        unless @nice == 0
-          "nice -n #{Shellwords.escape(@nice)} sh -c \"#{command}\""
-        else
+        if @nice == 0
           command
+        else
+          "nice -n #{ShellEscape.escape(@nice)} sh -c \"#{command}\""
         end
       end
 
       def build_command_without_options(bin, *args)
-        escaped_args = self.class.escape(*args)
+        escaped_args = ShellEscape.escape(*args)
         "#{bin} #{escaped_args}"
-      end
-
-      def self.escape(*args)
-        case args.size
-        when 1
-          escape_with_split(args[0])
-        else
-          Shellwords.join(args.map { |x| Shellwords.escape(x) })
-        end
-      end
-
-      private
-
-      def self.escape_with_split(string)
-        splits = Shellwords.split(string)
-        splits = splits.map { |x| Shellwords.escape(x) }
-        splits.join(' ')
       end
 
       def setup_watchers(loop, stdout, stderr)

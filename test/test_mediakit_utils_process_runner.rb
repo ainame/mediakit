@@ -27,10 +27,10 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
     assert(out)
     assert(out.kind_of?(String))
     assert(err.kind_of?(String))
-    assert(status == true)
+    assert(status)
   end
 
   def test_escape
-    assert_equal("a\\;b", Mediakit::Utils::ProcessRunner.escape("a;b"))
+    assert_equal("a\\;b", Mediakit::Utils::ShellEscape.escape("a;b"))
   end
 end

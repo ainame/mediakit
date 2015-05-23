@@ -34,7 +34,7 @@ module Mediakit
       def run(*args)
         options = (args.last && args.last.kind_of?(Hash)) ? args.pop : {}
         begin
-          escaped_args = Mediakit::Utils::ProcessRunner.escape(*args)
+          escaped_args = Mediakit::Utils::ShellEscape.escape(*args)
           runner = Mediakit::Utils::ProcessRunner.new(options)
           stdout, stderr, exit_status = runner.run(bin, escaped_args)
           raise(FailError, stderr) unless exit_status
@@ -52,7 +52,7 @@ module Mediakit
       #   @param args [Array] arguments for command
       # @return [String] command
       def command(*args)
-        escaped_args = Mediakit::Utils::ProcessRunner.escape(*args)
+        escaped_args = Mediakit::Utils::ShellEscape.escape(*args)
         "#{bin} #{escaped_args}"
       end
     end
