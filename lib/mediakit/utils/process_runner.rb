@@ -30,34 +30,28 @@ module Mediakit
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
         command = build_command(bin, *args)
-        pid, exit_status = nil
-        out_reader, err_reader = nil
-        loop = Coolio::Loop.new
+        exit_status = nil
         begin
           stdin, stdout, stderr, wait_thr = Open3.popen3(command)
           stdin.close
           pid = wait_thr.pid
-          timer = TimeoutTimer.new(@timeout, Thread.current)
-          timer.attach(loop)
-          out_watcher = IOWatcher.new(stdout) { timer.update }
-          out_watcher.attach(loop)
-          err_watcher = IOWatcher.new(stderr) { timer.update }
-          err_watcher.attach(loop)
-          loop_thread = Thread.new do
-            loop.run
+          begin
+            loop = Coolio::Loop.new
+            timer, out_watcher, err_watcher = setup_watchers(loop, stdout, stderr)
+            loop_thread = Thread.new { loop.run }
+            wait_thr.join
+            exit_status = (wait_thr.value.exitstatus == 0)
+          rescue Timeout::Error => error
+            force_kill_process(pid)
+            raise(error)
+          ensure
+            out_watcher.close unless out_watcher && out_watcher.closed?
+            err_watcher.close unless err_watcher && err_watcher.closed?
+            timer.detach if timer
+            loop_thread.join if loop_thread
           end
-          wait_thr.join
-          exit_status = (wait_thr.value.exitstatus == 0)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
-        rescue Timeout::Error => error
-          safe_kill_process(pid)
-          raise(error)
-        ensure
-          out_watcher.close if out_watcher
-          err_watcher.close if err_watcher
-          timer.detach if timer
-          loop_thread.join
         end
 
         [out_watcher.data, err_watcher.data, exit_status]
@@ -94,7 +88,18 @@ module Mediakit
         splits.join(' ')
       end
 
-      def safe_kill_process(pid)
+      def setup_watchers(loop, stdout, stderr)
+        timer = TimeoutTimer.new(@timeout, Thread.current)
+        timer.attach(loop)
+        out_watcher = IOWatcher.new(stdout) { timer.update }
+        out_watcher.attach(loop)
+        err_watcher = IOWatcher.new(stderr) { timer.update }
+        err_watcher.attach(loop)
+
+        [timer, out_watcher, err_watcher]
+      end
+
+      def force_kill_process(pid)
         Process.kill('SIGKILL', pid)
       rescue Errno::ESRCH
         warn 'already killedd'
