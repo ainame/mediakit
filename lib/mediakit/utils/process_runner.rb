@@ -12,7 +12,9 @@ module Mediakit
       class TimeoutError < StandardError;
       end
 
-      def initialize(timeout: nil, nice: 0)
+      DEFAULT_READ_TIMEOUT_INTERVAL = 30
+
+      def initialize(timeout: DEFAULT_READ_TIMEOUT_INTERVAL, nice: 0)
         @timeout = timeout
         @nice = nice
       end
