@@ -108,7 +108,6 @@ module Mediakit
         end
 
         def on_read(data)
-          puts data
           @data << data
           @block.call(self)
         end
