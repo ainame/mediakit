@@ -60,7 +60,7 @@ module Mediakit
       def build_command(bin, *args)
         command = build_command_without_options(bin, *args)
         unless @nice == 0
-          "nice -n #{@nice} sh -c \"#{command}\""
+          "nice -n #{Shellwords.escape(@nice)} sh -c \"#{command}\""
         else
           command
         end
