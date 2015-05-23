@@ -2,7 +2,7 @@ require 'shellwords'
 require 'open3'
 require 'thread'
 require 'timeout'
-
+require 'cool.io'
 
 module Mediakit
   module Utils
@@ -32,14 +32,17 @@ module Mediakit
         pid, exit_status = nil
         out_reader, err_reader = nil
         watch = TimeoutTimer.new(@timeout)
+        loop = Coolio::Loop.new
         begin
           stdin, stdout, stderr, wait_thr = Open3.popen3(command)
           stdin.close
           pid = wait_thr.pid
           watch.start(Thread.current)
-          out_reader = IOReader.new(stdout) { |chunk| watch.update }
-          err_reader = IOReader.new(stderr) { |chunk| watch.update }
-
+          out_watcher = IOWatcher.new(stdout) { watch.update }
+          out_watcher.attach(loop)
+          err_watcher = IOWatcher.new(stderr) { watch.update }
+          err_watcher.attach(loop)
+          loop.run
           puts 'wati_thr.join'
           wait_thr.join
           exit_status = (wait_thr.value.exitstatus == 0)
@@ -51,13 +54,12 @@ module Mediakit
           raise(error)
         ensure
           puts 'eunsure'
-          # exists nil when raised before initialize variables
-          out_reader.finish if out_reader
-          err_reader.finish if err_reader
+          out_watcher.close if out_watcher
+          err_watcher.close if err_watcher
           watch.finish
         end
 
-        [out_reader.data, err_reader.data, exit_status]
+        [out_watcher.data, err_watcher.data, exit_status]
       end
 
       def build_command(bin, *args)
@@ -89,6 +91,23 @@ module Mediakit
         splits = Shellwords.split(string)
         splits = splits.map { |x| Shellwords.escape(x) }
         splits.join(' ')
+      end
+
+      class IOWatcher < Coolio::IO
+        attr_reader(:data)
+
+        def initialize(io, &block)
+          @block = block
+          @data = ''
+          super
+        end
+
+        def on_read(data)
+          puts 'on_read'
+          puts data
+          @data << data
+          @block.call(self)
+        end
       end
 
       class IOReader
