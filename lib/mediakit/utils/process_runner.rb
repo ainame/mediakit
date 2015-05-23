@@ -27,8 +27,7 @@ module Mediakit
       # @return err [String] stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
-        puts command = build_command(bin, *args)
-
+        command = build_command(bin, *args)
         pid, exit_status = nil
         out_reader, err_reader = nil
         watch = TimeoutTimer.new(@timeout)
@@ -43,17 +42,14 @@ module Mediakit
           err_watcher = IOWatcher.new(stderr) { watch.update }
           err_watcher.attach(loop)
           loop.run
-          puts 'wati_thr.join'
           wait_thr.join
           exit_status = (wait_thr.value.exitstatus == 0)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         rescue Timeout::Error => error
-          puts 'raise timeout'
           Process.kill('SIGKILL', pid)
           raise(error)
         ensure
-          puts 'eunsure'
           out_watcher.close if out_watcher
           err_watcher.close if err_watcher
           watch.finish
@@ -103,49 +99,8 @@ module Mediakit
         end
 
         def on_read(data)
-          puts 'on_read'
-          puts data
           @data << data
           @block.call(self)
-        end
-      end
-
-      class IOReader
-        attr_reader(:data)
-
-        def initialize(io, &block)
-          raise(ArgumentError) unless block_given?
-          @io = io
-          @io.sync = true
-          @data = ''
-          @block = block
-          start
-        end
-
-        def finish
-          @thread.join
-          @thread.kill
-        end
-
-        private
-        def start
-          @thread = Thread.new { read }
-          nil
-        end
-
-        def read
-          return if @io.closed?
-          begin
-            while chunk = @io.gets
-              puts chunk
-              @data << chunk
-              @block.call(chunk) if @block
-            end
-          rescue IOError => e
-            warn "[WARN] IOError #{e.message}"
-          ensure
-            @io.close unless @io.closed?
-          end
         end
       end
 
