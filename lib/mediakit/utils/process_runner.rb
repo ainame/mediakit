@@ -114,12 +114,14 @@ module Mediakit
       end
 
       class TimeoutTimer < Coolio::TimerWatcher
+        DEFAULT_CHECK_INTERVAL = 0.1
+
         def initialize(duration, current_thread)
           @mutex = Mutex.new
           @duration = duration
           @watched_at = Time.now
           @current_thread = current_thread
-          super(0.1, true)
+          super(DEFAULT_CHECK_INTERVAL, true)
         end
 
         def on_timer
@@ -137,7 +139,8 @@ module Mediakit
         private
 
         def timeout?
-          (Time.now - @watched_at) > @duration
+          # compare duration into first decimal place by integer
+          ((Time.now - @watched_at) * 10).floor >= (@duration * 10).floor
         end
       end
     end
