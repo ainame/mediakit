@@ -27,7 +27,7 @@ module Mediakit
       # @return err [String] stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
-        puts command = build_command(bin, *args)
+        command = build_command(bin, *args)
         pid, exit_status = nil
         out_reader, err_reader = nil
         loop = Coolio::Loop.new
@@ -44,7 +44,6 @@ module Mediakit
           loop_thread = Thread.new do
             loop.run
           end
-          puts 'wait_thr'
           wait_thr.join
           exit_status = (wait_thr.value.exitstatus == 0)
         rescue Errno::ENOENT => e
@@ -126,7 +125,6 @@ module Mediakit
 
         def on_timer
           if timeout?
-            p 'timerout?'
             @current_thread.raise(Timeout::Error, "wait timeout error with #{@duration} sec.")
           end
         end
