@@ -27,32 +27,36 @@ module Mediakit
       # @return err [String] stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
-        command = build_command(bin, *args)
+        puts command = build_command(bin, *args)
         pid, exit_status = nil
         out_reader, err_reader = nil
-        watch = TimeoutTimer.new(@timeout)
         loop = Coolio::Loop.new
         begin
           stdin, stdout, stderr, wait_thr = Open3.popen3(command)
           stdin.close
           pid = wait_thr.pid
-          watch.start(Thread.current)
-          out_watcher = IOWatcher.new(stdout) { watch.update }
+          timer = TimeoutTimer.new(@timeout, Thread.current)
+          timer.attach(loop)
+          out_watcher = IOWatcher.new(stdout) { timer.update }
           out_watcher.attach(loop)
-          err_watcher = IOWatcher.new(stderr) { watch.update }
+          err_watcher = IOWatcher.new(stderr) { timer.update }
           err_watcher.attach(loop)
-          loop.run
+          loop_thread = Thread.new do
+            loop.run
+          end
+          puts 'wait_thr'
           wait_thr.join
           exit_status = (wait_thr.value.exitstatus == 0)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         rescue Timeout::Error => error
-          Process.kill('SIGKILL', pid)
+          safe_kill_process(pid)
           raise(error)
         ensure
           out_watcher.close if out_watcher
           err_watcher.close if err_watcher
-          watch.finish
+          timer.detach if timer
+          loop_thread.join
         end
 
         [out_watcher.data, err_watcher.data, exit_status]
@@ -89,6 +93,12 @@ module Mediakit
         splits.join(' ')
       end
 
+      def safe_kill_process(pid)
+        Process.kill('SIGKILL', pid)
+      rescue Errno::ESRCH
+        warn 'already killedd'
+      end
+
       class IOWatcher < Coolio::IO
         attr_reader(:data)
 
@@ -99,37 +109,26 @@ module Mediakit
         end
 
         def on_read(data)
+          puts data
           @data << data
           @block.call(self)
         end
       end
 
-      # watch process progress by io.
-      # when wait time exceed duration, then kill process.
-      class TimeoutTimer
-        attr_reader(:duration)
-
-        def initialize(duration)
-          @duration   = duration
+      class TimeoutTimer < Coolio::TimerWatcher
+        def initialize(duration, current_thread)
+          @mutex = Mutex.new
+          @duration = duration
           @watched_at = Time.now
-          @mutex      = Mutex.new
-        end
-
-        def start(current_thread, &block)
           @current_thread = current_thread
-          @watch_thread = Thread.new do
-            loop do
-              if timeout?
-                @current_thread.raise(Timeout::Error, "wait timeout error with #{duration} sec.")
-              end
-              sleep(0.1)
-            end
-          end
-          nil
+          super(0.1, true)
         end
 
-        def finish
-          @watch_thread.kill
+        def on_timer
+          if timeout?
+            p 'timerout?'
+            @current_thread.raise(Timeout::Error, "wait timeout error with #{@duration} sec.")
+          end
         end
 
         def update
@@ -141,7 +140,7 @@ module Mediakit
         private
 
         def timeout?
-          (Time.now - @watched_at) > duration
+          (Time.now - @watched_at) > @duration
         end
       end
     end
