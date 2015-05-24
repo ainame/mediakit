@@ -1,6 +1,6 @@
 # Mediakit
 
-[![Build Status](https://travis-ci.org/ainame/mediakit.svg)](https://travis-ci.org/ainame/mediakit)
+[![Circle CI](https://circleci.com/gh/ainame/mediakit/tree/master.svg?style=svg)](https://circleci.com/gh/ainame/mediakit/tree/master)
 
 mediakit is the libraries for ffmpeg and sox backed media manipulation something.
 I've design this library for following purpose.
@@ -13,10 +13,13 @@ I've design this library for following purpose.
 Currently you can use low-level inteface of mediakit!
 
 * [x] low-level interface for ffmpeg
-* [*] low-level interface's basic feature
-  * [*] nice setting
-  * [*] read timeout setting
-  * [*] shell escape for security
+* [x] low-level interface's basic feature
+  * [x] unit testing supports (fake driver)
+  * [x] nice command setting
+  * [x] read timeout setting
+  * [x] shell escape for security
+  * [ ] logger support
+  * [ ] ffmpeg instropection (support formats, codecs, encoders, decoders..)
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
 * [ ] high-level interface for sox
