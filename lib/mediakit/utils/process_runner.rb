@@ -30,7 +30,6 @@ module Mediakit
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
         command = build_command(bin, *args)
-        exit_status = nil
         begin
           stdin, stdout, stderr, wait_thread = Open3.popen3(command)
           stdin.close
