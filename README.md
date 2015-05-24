@@ -53,7 +53,7 @@ This is a little bore interface for constructing options,
 but can pass certain it.
 
 ```rb
-driver = Mediakit::Drivers::FFmpeg.new(timeout: 30, nice: 0)
+driver = Mediakit::Drivers::FFmpeg.new()
 ffmpeg = Mediakit::FFmpeg.new(driver)
 
 options = Mediakit::FFmpeg::Options.new(
@@ -75,8 +75,51 @@ options = Mediakit::FFmpeg::Options.new(
   ),
 )
 puts "$ #{ffmpeg.command(options)}"
-puts ffmpeg.run(options)
+puts ffmpeg.run(options, timeout: 30, nice: 0)
 ```
+
+#### Drivers
+
+mediakit has two drivers for execute command. First, Popen Driver is implemented by Open3#popen3 that is main driver. Second, FakeDriver is the fake object for unit-testing.
+
+##### Driver Usage
+
+instatiate
+
+```ruby
+default_driver = Mediakit::Drivers::FFmpeg.new # default is popen driver
+driver = Mediakit::Drivers::FFmpeg.new(:popen) # explicitly use popen driver
+fake_driver = Mediakit::Drivers::FFmpeg.new(:fake) # fake driver
+```
+
+testing
+
+```
+# setup
+fake_driver = Mediakit::Drivers::FFmpeg.new(:fake)
+fake_driver.output = 'output'
+fake_driver.error_output = 'error_output'
+fake_driver.exit_status = false
+ffmpeg = Mediakit::FFmpeg.new(fake_driver)
+
+# excursie
+options = Mediakit::FFmpeg::Options.new(
+  Mediakit::FFmpeg::Options::GlobalOption.new(
+    'version' => 100,
+  ),
+}
+ffmpeg.run(options)
+
+# verify
+assert_equal(fake_driver.last_command, 'ffmpeg -version')
+assert_equal(fake_driver.output, 'output')
+assert_equal(fake_driver.error_output, 'error_output')
+assert_equal(fake_driver.exit_status, false)
+
+# teardown
+fake_driver.reset
+```
+
 
 ### High Level Interface
 
