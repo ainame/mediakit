@@ -79,7 +79,7 @@ module Mediakit
       end
 
       def reset
-        @last_command, @output, @error_output @exit_status = nil
+        @last_command, @output, @error_output, @exit_status = nil
       end
     end
 
