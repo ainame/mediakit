@@ -32,29 +32,44 @@ module Mediakit
         command = build_command(bin, *args)
         exit_status = nil
         begin
-          stdin, stdout, stderr, wait_thr = Open3.popen3(command)
+          stdin, stdout, stderr, wait_thread = Open3.popen3(command)
           stdin.close
-          pid = wait_thr.pid
-          begin
-            loop = Coolio::Loop.new
-            timer, out_watcher, err_watcher = setup_watchers(loop, stdout, stderr)
-            loop_thread = Thread.new { loop.run }
-            wait_thr.join
-            exit_status = (wait_thr.value.exitstatus == 0)
-          rescue Timeout::Error => error
-            force_kill_process(pid)
-            raise(error)
-          ensure
-            out_watcher.close unless out_watcher && out_watcher.closed?
-            err_watcher.close unless err_watcher && err_watcher.closed?
-            timer.detach if timer
-            loop_thread.join if loop_thread
-          end
+          output, error_output, exit_status = if @timeout
+                                                wait_with_timeout(stdout, stderr, wait_thread)
+                                              else
+                                                wait_without_timeout(stdout, stderr, wait_thread)
+                                              end
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         end
 
-        [out_watcher.data, err_watcher.data, exit_status]
+        [output, error_output, exit_status]
+      end
+
+      def wait_without_timeout(stdout, stderr, wait_thread)
+        wait_thread.join
+        exit_status = (wait_thread.value.exitstatus == 0)
+        [stdout.read, stderr.read, exit_status]
+      end
+
+      def wait_with_timeout(stdout, stderr, wait_thread)
+        begin
+          loop = Coolio::Loop.new
+          timer, out_watcher, err_watcher = setup_watchers(loop, stdout, stderr)
+          loop_thread = Thread.new { loop.run }
+          wait_thread.join
+          exit_status = (wait_thread.value.exitstatus == 0)
+        rescue Timeout::Error => error
+          force_kill_process(wait_thread.pid)
+          raise(error)
+        ensure
+          out_watcher.close if out_watcher && !out_watcher.closed?
+          err_watcher.close if err_watcher && !err_watcher.closed?
+          timer.detach if timer && timer.attached?
+          loop_thread.join if loop_thread
+        end
+
+        [out_watcher.data, err_watcher.data,exit_status]
       end
 
       def build_command(bin, *args)
