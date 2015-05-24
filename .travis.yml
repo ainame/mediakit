@@ -1,8 +1,0 @@
-language: ruby
-cache:
-  bundler: true
-rvm:
-  - 2.2.0
-before_install:
-  - bundler --version
-  - gem --version

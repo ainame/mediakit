@@ -1,0 +1,8 @@
+machine:
+  ruby:
+    version: 2.2.2
+dependencies:
+    pre:
+      - bash ./.circle/build_ffmpeg.sh
+    cache_directories:
+      - ffmpeg-2.6.3
