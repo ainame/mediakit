@@ -15,20 +15,14 @@ module Mediakit
     # execute runners with options object
     #
     # @param [Mediakit::Runners::FFmpeg::Options] options options to create CLI argument
-    def run(options)
+    def run(options, driver_options = {})
       args = options.compose
-      execute(args)
+      @driver.run(args, driver_options)
     end
 
-    def command(options)
+    def command(options, driver_options = {})
       args = options.compose
-      @driver.command(args)
-    end
-
-    private
-
-    def execute(args = '')
-      @driver.run(args)
+      @driver.command(args, driver_options)
     end
   end
 end
