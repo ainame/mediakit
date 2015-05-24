@@ -63,9 +63,9 @@ module Mediakit
           force_kill_process(wait_thread.pid)
           raise(error)
         ensure
-          out_watcher.close unless out_watcher && out_watcher.closed?
-          err_watcher.close unless err_watcher && err_watcher.closed?
-          timer.detach if timer
+          out_watcher.close if out_watcher && !out_watcher.closed?
+          err_watcher.close if err_watcher && !err_watcher.closed?
+          timer.detach if timer && timer.attached?
           loop_thread.join if loop_thread
         end
 
