@@ -22,7 +22,6 @@ EOS
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "cocaine", "~> 0.5.7"
   spec.add_runtime_dependency "activesupport", "~> 4"
   spec.add_runtime_dependency "cool.io", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"
