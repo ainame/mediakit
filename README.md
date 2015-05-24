@@ -94,7 +94,7 @@ fake_driver = Mediakit::Drivers::FFmpeg.new(:fake) # fake driver
 
 testing
 
-```
+```ruby
 # setup
 fake_driver = Mediakit::Drivers::FFmpeg.new(:fake)
 fake_driver.output = 'output'
@@ -105,7 +105,7 @@ ffmpeg = Mediakit::FFmpeg.new(fake_driver)
 # excursie
 options = Mediakit::FFmpeg::Options.new(
   Mediakit::FFmpeg::Options::GlobalOption.new(
-    'version' => 100,
+    'version' => true,
   ),
 }
 ffmpeg.run(options)
