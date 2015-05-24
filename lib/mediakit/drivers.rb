@@ -30,12 +30,12 @@ module Mediakit
       # @overload run(*args, options)
       #   @param [Array] args arguments for command
       #   @option [Hash] options run options
-      # @return [Bool] stdout output
+      # @return [String] stdout output
       def run(*args)
-        options = (args.last && args.last.kind_of?(Hash)) ? args.pop : {}
+        options, rest_args = parse_options(args.dup)
+        runner = Mediakit::Utils::ProcessRunner.new(options)
         begin
-          runner = Mediakit::Utils::ProcessRunner.new(options)
-          stdout, stderr, exit_status = runner.run(bin, *args)
+          stdout, stderr, exit_status = runner.run(bin, *rest_args)
           raise(FailError, stderr) unless exit_status
           stdout
         rescue Mediakit::Utils::ProcessRunner::CommandNotFoundError => e
@@ -51,18 +51,31 @@ module Mediakit
       #   @param args [Array] arguments for command
       # @return [String] command
       def command(*args)
-        escaped_args = Mediakit::Utils::ShellEscape.escape(*args)
-        "#{bin} #{escaped_args}"
+        options, rest_args = parse_options(args.dup)
+        runner = Mediakit::Utils::ProcessRunner.new(options)
+        runner.build_command(bin, *rest_args)
+      end
+
+      def parse_options(args)
+        options = (args.last && args.last.kind_of?(Hash)) ? args.pop : {}
+        [options, args]
       end
     end
 
-    class FakeDriver < Base
-      def run(args = '')
-        true
-      end
+    class FakeDriver < PopenDriver
+      attr_accessor(:last_command, :output, :error_output, :exit_status)
 
-      def command(args = '')
-        bin + args
+      # fake driver for testing
+      #
+      # @overload run(args)
+      #   @param [String] args string argument for command
+      # @overload run(*args, options)
+      #   @param [Array] args arguments for command
+      #   @option [Hash] options run options
+      # @return [String] stdout output
+      def run(*args)
+        @last_command = command(*args)
+        [(output || ''), (error_output || ''), (exit_status || true)]
       end
     end
 

@@ -41,4 +41,16 @@ class TestMediakitDrivers < Minitest::Test
     driver = Mediakit::Drivers::FFmpeg.new
     assert(driver.run('-version'))
   end
+
+  def test_create_fake_driver
+    fake = Mediakit::Drivers::FFmpeg.new(:fake)
+    fake.output = 'this is fake output'
+    fake.error_output = 'this is fake error output'
+    results = fake.run('--version')
+
+    assert_equal(fake.last_command, 'ffmpeg --version')
+    assert_equal(results[0], 'this is fake output')
+    assert_equal(results[1], 'this is fake error output')
+    assert_equal(results[2], true)
+  end
 end
