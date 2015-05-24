@@ -10,10 +10,13 @@ I've design this library for following purpose.
 
 ## Development Plan
 
-Currently under development.
+Currently you can use low-level inteface of mediakit!
 
 * [x] low-level interface for ffmpeg
-* [ ] low-level interface's basic feature
+* [*] low-level interface's basic feature
+  * [*] nice setting
+  * [*] read timeout setting
+  * [*] shell escape for security
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
 * [ ] high-level interface for sox
@@ -43,14 +46,14 @@ So it need each binary command file.
 
 ## Usage
 
-### Low Level Usage
+### Low Level Interface
 
 The low level means it's near command line usage.
 This is a little bore interface for constructing options,
 but can pass certain it.
 
 ```rb
-driver = Mediakit::Drivers::FFmpeg.new
+driver = Mediakit::Drivers::FFmpeg.new(timeout: 30, nice: 0)
 ffmpeg = Mediakit::FFmpeg.new(driver)
 
 options = Mediakit::FFmpeg::Options.new(
@@ -75,7 +78,7 @@ puts "$ #{ffmpeg.command(options)}"
 puts ffmpeg.run(options)
 ```
 
-### High Level Usage
+### High Level Interface
 
 TBD
 
