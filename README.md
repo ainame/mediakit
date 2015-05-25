@@ -12,8 +12,8 @@ I've design this library for following purpose.
 
 Currently you can use low-level inteface of mediakit!
 
-* [x] low-level interface for ffmpeg
-* [x] low-level interface's basic feature
+* [ ] low-level interface
+  * [x] execute command for ffmpeg
   * [x] unit testing supports (fake driver)
   * [x] nice command setting
   * [x] read timeout setting
@@ -102,7 +102,7 @@ testing
 fake_driver = Mediakit::Drivers::FFmpeg.new(:fake)
 fake_driver.output = 'output'
 fake_driver.error_output = 'error_output'
-fake_driver.exit_status = false
+fake_driver.exit_status = true
 ffmpeg = Mediakit::FFmpeg.new(fake_driver)
 
 # excursie
@@ -111,13 +111,13 @@ options = Mediakit::FFmpeg::Options.new(
     'version' => true,
   ),
 }
-ffmpeg.run(options)
+out, err, exit_status = ffmpeg.run(options)
 
 # verify
 assert_equal(fake_driver.last_command, 'ffmpeg -version')
-assert_equal(fake_driver.output, 'output')
-assert_equal(fake_driver.error_output, 'error_output')
-assert_equal(fake_driver.exit_status, false)
+assert_equal(out, 'output')
+assert_equal(err, 'error_output')
+assert_equal(exit_status, true)
 
 # teardown
 fake_driver.reset
