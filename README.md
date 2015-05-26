@@ -18,8 +18,9 @@ Currently you can use low-level inteface of mediakit!
   * [x] nice command setting
   * [x] read timeout setting
   * [x] shell escape for security
+  * [x] ffmpeg instropection (retrive supported formats, codecs, encoders and decoders)
   * [ ] logger support
-  * [ ] ffmpeg instropection (support formats, codecs, encoders, decoders..)
+* [ ] low-level ffprobe interface
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
 * [ ] high-level interface for sox
