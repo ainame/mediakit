@@ -14,7 +14,7 @@ module Mediakit
 
       DEFAULT_READ_TIMEOUT_INTERVAL = 30
 
-      def initialize(timeout: DEFAULT_READ_TIMEOUT_INTERVAL, nice: 0)
+      def initialize(timeout: nil, nice: 0)
         @timeout = timeout
         @nice = nice
       end
@@ -68,14 +68,6 @@ module Mediakit
         [@out_watcher.data, @err_watcher.data, exit_status]
       end
 
-      def run_loop
-        @loop.run
-      rescue => e
-        # workaround for ambiguous RuntimeError
-        warn(e.message)
-        warn(e.backtrace)
-      end
-
       def build_command(bin, *args)
         command = build_command_without_options(bin, *args)
         if @nice == 0
@@ -99,6 +91,15 @@ module Mediakit
         @out_watcher.attach(@loop)
         @err_watcher.attach(@loop)
         @timer.attach(@loop)
+      end
+
+      def run_loop
+        @loop.run
+      rescue => e
+        # workaround for ambiguous RuntimeError
+        # TODO: replace logger method
+        warn(e.message)
+        warn(e.backtrace)
       end
 
       def teardown_watchers
