@@ -2,6 +2,7 @@ require 'open3'
 require 'thread'
 require 'timeout'
 require 'cool.io'
+require 'logger'
 require 'mediakit/utils/shell_escape'
 
 module Mediakit
@@ -14,9 +15,12 @@ module Mediakit
 
       DEFAULT_READ_TIMEOUT_INTERVAL = 30
 
-      def initialize(timeout: nil, nice: 0)
+      attr_reader(:logger)
+
+      def initialize(timeout: nil, nice: 0, logger: nil)
         @timeout = timeout
         @nice = nice
+        @logger = logger || Logger.new(STDOUT)
       end
 
       # @overload run(command, *args)
@@ -62,7 +66,6 @@ module Mediakit
           raise(error)
         ensure
           teardown_watchers
-          loop_thread.join if loop_thread
         end
 
         [@out_watcher.data, @err_watcher.data, exit_status]
@@ -84,9 +87,8 @@ module Mediakit
 
       def setup_watchers(stdout, stderr)
         @timer = TimeoutTimer.new(@timeout, Thread.current)
-        @out_watcher = IOWatcher.new(stdout) { @timer.update }
-        @err_watcher = IOWatcher.new(stderr) { @timer.update }
-
+        @out_watcher = IOWatcher.new(stdout) { |data| @timer.update; logger.info(data) }
+        @err_watcher = IOWatcher.new(stderr) { |data| @timer.update; logger.error(data) }
         @loop = Coolio::Loop.new
         @out_watcher.attach(@loop)
         @err_watcher.attach(@loop)
@@ -98,8 +100,8 @@ module Mediakit
       rescue => e
         # workaround for ambiguous RuntimeError
         # TODO: replace logger method
-        warn(e.message)
-        warn(e.backtrace)
+        logger.warn(e.message)
+        logger.warn(e.backtrace.join("\n"))
       end
 
       def teardown_watchers
@@ -107,12 +109,15 @@ module Mediakit
         @out_watcher.close if @out_watcher && !@out_watcher.closed?
         @err_watcher.close if @err_watcher && !@err_watcher.closed?
         @loop.stop if @loop.has_active_watchers?
+      rescue RuntimeError => e
+        logger.warn(e.message)
+        logger.warn(e.backtrace.join("\n"))
       end
 
       def force_kill_process(pid)
         Process.kill('SIGKILL', pid)
-      rescue Errno::ESRCH
-        warn 'already killedd'
+      rescue Errno::ESRCH => e
+        logger.warn("fail SIGKILL pid=#{pid} - #{e.message}, #{e.backtrace.join("\n")}")
       end
 
       class IOWatcher < Coolio::IO
@@ -126,7 +131,7 @@ module Mediakit
 
         def on_read(data)
           @data << data
-          @block.call(self)
+          @block.call(data)
         end
 
         def on_close

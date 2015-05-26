@@ -1,5 +1,6 @@
 require 'minitest_helper'
 require 'timeout'
+require 'stringio'
 
 class TestMediakitUtilsProcessRunner < Minitest::Test
   def setup
@@ -10,11 +11,13 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
 
   def teardown
     @timeout = nil
+    @logger = nil
   end
 
   def runner
     options = {}
     options[:timeout] = @timeout if @timeout
+    options[:logger] = @logger || Logger.new(nil)
     Mediakit::Utils::ProcessRunner.new(options)
   end
 
@@ -59,5 +62,15 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
 
   def test_escape
     assert_equal("a\\;b", Mediakit::Utils::ShellEscape.escape("a;b"))
+  end
+
+  def test_logger
+    io = StringIO.new
+    @logger = Logger.new(io)
+    @logger.level = Logger::DEBUG
+    out, err, _ = runner.run(@bin, '--sleep=0.1 --progress')
+    assert_equal(runner.logger, @logger)
+    # assert_equal(out, io.string)
+    # assert_equal(err, err)
   end
 end
