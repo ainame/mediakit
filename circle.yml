@@ -2,7 +2,37 @@ machine:
   ruby:
     version: 2.2.2
 dependencies:
-    pre:
-      - bash ./.circle/build_ffmpeg.sh
-    cache_directories:
-      - ffmpeg-2.6.3
+  cache_directories:
+    - "~/ffmpeg_build"
+  pre:
+    - >
+        FFMPEG_DIR="$HOME/ffmpeg_build";
+        FFMPEG_VERSION="2.6.3";
+        if [ ! -d "$FFMPEG_DIR" ]; then
+        mkdir "$FFMPEG_DIR" &&
+        cd "$FFMPEG_DIR" &&
+        mkdir ffmpeg &&
+        mkdir fdkaac &&
+        mkdir src &&
+        cd src &&
+        wget https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.4.tar.gz &&
+        tar xfz fdk-aac-0.1.4.tar.gz &&
+        cd fdk-aac-0.1.4 &&
+        autoreconf -fvi &&
+        ./configure --prefix="$FFMPEG_DIR/fdkaac" --disable-shared &&
+        sudo make install &&
+        cd "$FFMPEG_DIR" &&
+        wget "http://ffmpeg.org/releases/ffmpeg-$FFMPEG_VERSION.tar.bz2" &&
+        tar -xjpf "ffmpeg-$FFMPEG_VERSION.tar.bz2" &&
+        cd "ffmpeg-$FFMPEG_VERSION" &&
+        ./configure
+        --extra-cflags="-I$FFMPEG_DIR/fdkaac/include"
+        --extra-ldflags="-L$FFMPEG_DIR/fdkaac/lib"
+        --enable-gpl
+        --enable-nonfree
+        --enable-libfaac
+        --enable-libmp3lame
+        --enable-libfdk-aac &&
+        sudo make install;
+        fi;
+        cd "$FFMPEG_DIR/ffmpeg-$FFMPEG_VERSION" && sudo make install
