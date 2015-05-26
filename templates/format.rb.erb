@@ -1,9 +1,0 @@
-module Mediakit
-  module Formats
-    <% @items.each do |item| %>
-    class Format<%= item.name.classify %>
-      def name; '<%= item.name %>' end
-    end
-    <% end %>
-  end
-end
