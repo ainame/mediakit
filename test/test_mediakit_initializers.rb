@@ -13,8 +13,12 @@ class TestMediakitInitializers < Minitest::Test
     Mediakit::Initializers::FFmpeg::EncoderInitializer.new(ffmpeg).call
 
     assert(ffmpeg.codecs.kind_of?(Array))
+    assert(ffmpeg.codecs.size > 0)
     assert(ffmpeg.formats.kind_of?(Array))
+    assert(ffmpeg.formats.size > 0)
     assert(ffmpeg.encoders.kind_of?(Array))
+    assert(ffmpeg.encoders.size > 0)
     assert(ffmpeg.decoders.kind_of?(Array))
+    assert(ffmpeg.decoders.size > 0)
   end
 end

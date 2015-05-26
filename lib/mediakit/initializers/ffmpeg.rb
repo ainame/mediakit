@@ -49,7 +49,9 @@ module Mediakit
 
         def raw_items
           options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('codecs' => true))
-          @command.run(options).split(DELIMITER_FOR_CODECS)[1].each_line.to_a
+          output, _, _ = @command.run(options)
+          return [] if output.nil? || output.empty?
+          output.split(DELIMITER_FOR_CODECS)[1].each_line.to_a
         end
 
         def create_item(line)
@@ -89,7 +91,9 @@ module Mediakit
 
         def raw_items
           options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('formats' => true))
-          @command.run(options).split(DELIMITER_FOR_FORMATS)[1].each_line.to_a
+          output, _, _ = @command.run(options)
+          return [] if output.nil? || output.empty?
+          output.split(DELIMITER_FOR_FORMATS)[1].each_line.to_a
         end
 
         def create_item(line)
@@ -124,7 +128,9 @@ module Mediakit
 
         def raw_items
           options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('decoders' => true))
-          @command.run(options).split(DELIMITER_FOR_CODER)[1].each_line.to_a
+          output, _, _ = @command.run(options)
+          return [] if output.nil? || output.empty?
+          output.split(DELIMITER_FOR_CODER)[1].each_line.to_a
         end
 
         def create_item(line)
@@ -172,7 +178,9 @@ module Mediakit
 
         def raw_items
           options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('encoders' => true))
-          @command.run(options).split(DELIMITER_FOR_CODER)[1].each_line.to_a
+          output, _, _ = @command.run(options)
+          return [] if output.nil? || output.empty?
+          output.split(DELIMITER_FOR_CODER)[1].each_line.to_a
         end
 
         def create_item(line)
