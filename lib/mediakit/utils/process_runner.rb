@@ -53,22 +53,27 @@ module Mediakit
 
       def wait_with_timeout(stdout, stderr, wait_thread)
         begin
-          loop = Coolio::Loop.new
-          timer, out_watcher, err_watcher = setup_watchers(loop, stdout, stderr)
-          loop_thread = Thread.new { loop.run }
+          setup_watchers(stdout, stderr)
+          loop_thread = Thread.new { run_loop }
           wait_thread.join
           exit_status = (wait_thread.value.exitstatus == 0)
         rescue Timeout::Error => error
           force_kill_process(wait_thread.pid)
           raise(error)
         ensure
-          out_watcher.close if out_watcher && !out_watcher.closed?
-          err_watcher.close if err_watcher && !err_watcher.closed?
-          timer.detach if timer && timer.attached?
+          teardown_watchers
           loop_thread.join if loop_thread
         end
 
-        [out_watcher.data, err_watcher.data,exit_status]
+        [@out_watcher.data, @err_watcher.data, exit_status]
+      end
+
+      def run_loop
+        @loop.run
+      rescue => e
+        # workaround for ambiguous RuntimeError
+        warn(e.message)
+        warn(e.backtrace)
       end
 
       def build_command(bin, *args)
@@ -85,15 +90,22 @@ module Mediakit
         "#{bin} #{escaped_args}"
       end
 
-      def setup_watchers(loop, stdout, stderr)
-        timer = TimeoutTimer.new(@timeout, Thread.current)
-        timer.attach(loop)
-        out_watcher = IOWatcher.new(stdout) { timer.update }
-        out_watcher.attach(loop)
-        err_watcher = IOWatcher.new(stderr) { timer.update }
-        err_watcher.attach(loop)
+      def setup_watchers(stdout, stderr)
+        @timer = TimeoutTimer.new(@timeout, Thread.current)
+        @out_watcher = IOWatcher.new(stdout) { @timer.update }
+        @err_watcher = IOWatcher.new(stderr) { @timer.update }
 
-        [timer, out_watcher, err_watcher]
+        @loop = Coolio::Loop.new
+        @out_watcher.attach(@loop)
+        @err_watcher.attach(@loop)
+        @timer.attach(@loop)
+      end
+
+      def teardown_watchers
+        @loop.watchers.each { |w| w.detach  if w.attached? }
+        @out_watcher.close if @out_watcher && !@out_watcher.closed?
+        @err_watcher.close if @err_watcher && !@err_watcher.closed?
+        @loop.stop if @loop.has_active_watchers?
       end
 
       def force_kill_process(pid)
@@ -114,6 +126,10 @@ module Mediakit
         def on_read(data)
           @data << data
           @block.call(self)
+        end
+
+        def on_close
+          @block = nil
         end
       end
 
