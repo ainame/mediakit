@@ -2,7 +2,7 @@ require 'minitest_helper'
 require 'timeout'
 require 'stringio'
 
-class TestMediakitUtilsProcessRunner < Minitest::Test
+class TestMediakitProcessRunner < Minitest::Test
   def setup
     @bin = File.join(TestContext.root, 'test/supports/ffmpeg')
     STDOUT.sync = true
@@ -18,7 +18,7 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
     options = {}
     options[:timeout] = @timeout if @timeout
     options[:logger] = @logger || Logger.new(nil)
-    Mediakit::Utils::ProcessRunner.new(options)
+    Mediakit::Process::Runner.new(options)
   end
 
   def test_without_timeout_error
@@ -61,7 +61,7 @@ class TestMediakitUtilsProcessRunner < Minitest::Test
   end
 
   def test_escape
-    assert_equal("a\\;b", Mediakit::Utils::ShellEscape.escape("a;b"))
+    assert_equal("a\\;b", Mediakit::Process::ShellEscape.escape("a;b"))
   end
 
   def test_logger

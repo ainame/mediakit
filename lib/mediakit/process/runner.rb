@@ -3,11 +3,11 @@ require 'thread'
 require 'timeout'
 require 'cool.io'
 require 'logger'
-require 'mediakit/utils/shell_escape'
+require 'mediakit/process/shell_escape'
 
 module Mediakit
-  module Utils
-    class ProcessRunner
+  module Process
+    class Runner
       class CommandNotFoundError < StandardError;
       end
       class TimeoutError < StandardError;
@@ -116,7 +116,7 @@ module Mediakit
       end
 
       def force_kill_process(pid)
-        Process.kill('SIGKILL', pid)
+        ::Process.kill('SIGKILL', pid)
       rescue Errno::ESRCH => e
         logger.warn("fail SIGKILL pid=#{pid} - #{e.message}, #{e.backtrace.join("\n")}")
       end

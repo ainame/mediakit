@@ -1,7 +1,7 @@
 require 'shellwords'
 
 module Mediakit
-  module Utils
+  module Process
     module ShellEscape
       def escape(*args)
         case args.size

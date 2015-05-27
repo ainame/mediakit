@@ -1,5 +1,4 @@
-require 'shellwords'
-require 'mediakit/utils/process_runner'
+require 'mediakit/process/runner'
 
 module Mediakit
   module Drivers
@@ -34,12 +33,12 @@ module Mediakit
       # @return [String] stdout output
       def run(*args)
         options, rest_args = parse_options(args.dup)
-        runner = Mediakit::Utils::ProcessRunner.new(options)
+        runner = Mediakit::Process::Runner.new(options)
         begin
           stdout, stderr, exit_status = runner.run(bin, *rest_args)
           raise(FailError, stderr) unless exit_status
           stdout
-        rescue Mediakit::Utils::ProcessRunner::CommandNotFoundError => e
+        rescue Mediakit::Process::Runner::CommandNotFoundError => e
           raise(ConfigurationError, "cant' find bin in #{bin}.")
         end
       end
@@ -53,7 +52,7 @@ module Mediakit
       # @return [String] command
       def command(*args)
         options, rest_args = parse_options(args.dup)
-        runner = Mediakit::Utils::ProcessRunner.new(options)
+        runner = Mediakit::Process::Runner.new(options)
         runner.build_command(bin, *rest_args)
       end
 
