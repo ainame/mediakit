@@ -28,4 +28,5 @@ EOS
   spec.add_development_dependency "pry", '~> 0.10'
   spec.add_development_dependency "ruby-debug-ide", "~> 0.4"
   spec.add_development_dependency "yard", "> 0.8"
+  spec.add_development_dependency "rubocop", ">= 0.31"
 end
