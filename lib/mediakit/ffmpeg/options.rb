@@ -24,10 +24,12 @@ module Mediakit
         return if option.nil?
         case option
         when GlobalOption
+          raise(ArgumentError, 'you can give only a GlobalOption.') if @global
           set_global(option)
         when InputFileOption
           add_input(option)
         when OutputFileOption
+          raise(ArgumentError, 'you can give only a OutputFileOption.') if @output
           set_output(option)
         else
           raise(ArgumentError)
@@ -96,6 +98,12 @@ module Mediakit
       end
 
       class GlobalOption < OrderedHash
+        def initialize(options = {})
+          if options.values.any? { |x| x.kind_of?(Hash) }
+            raise(ArgumentError, 'you can\'t give nested Hash in GlobalOption')
+          end
+          super
+        end
       end
 
       class OptionPathPair
