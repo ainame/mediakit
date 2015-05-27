@@ -66,6 +66,7 @@ module Mediakit
           raise(error)
         ensure
           teardown_watchers
+          loop_thread.join if loop_thread
         end
 
         [@out_watcher.data, @err_watcher.data, exit_status]
