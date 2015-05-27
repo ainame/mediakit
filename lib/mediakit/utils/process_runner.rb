@@ -77,7 +77,7 @@ module Mediakit
         if @nice == 0
           command
         else
-          "nice -n #{ShellEscape.escape(@nice)} sh -c \"#{command}\""
+          "nice -n #{ShellEscape.escape(@nice.to_s)} sh -c \"#{command}\""
         end
       end
 

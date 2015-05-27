@@ -9,6 +9,7 @@ module Mediakit
 
     class Base
       attr_reader(:bin)
+
       def initialize(bin)
         @bin = bin
       end
@@ -63,7 +64,7 @@ module Mediakit
     end
 
     class FakeDriver < PopenDriver
-      attr_accessor(:last_command, :output, :error_output, :exit_status)
+      attr_accessor(:last_command, :output, :error_output, :exit_status, :timeout, :nice)
 
       # fake driver for testing
       #
@@ -75,11 +76,15 @@ module Mediakit
       # @return [String] stdout output
       def run(*args)
         @last_command = command(*args)
+
+        options, rest_args = parse_options(args.dup)
+        @timeout = options[:timeout] if options[:timeout]
+        @nice = options[:nice] if options[:nice]
         [(output || ''), (error_output || ''), (exit_status || true)]
       end
 
       def reset
-        @last_command, @output, @error_output, @exit_status = nil
+        @last_command, @output, @error_output, @exit_status, @timeout, @nice = nil
       end
     end
 
