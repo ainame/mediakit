@@ -12,6 +12,7 @@ module Mediakit
 
         def call
           @command.send(item_type).concat(parse_items)
+          @command.send(item_type).freeze
         end
 
         def item_type
