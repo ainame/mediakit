@@ -29,4 +29,5 @@ EOS
   spec.add_development_dependency "ruby-debug-ide", "~> 0.4"
   spec.add_development_dependency "yard", "> 0.8"
   spec.add_development_dependency "rubocop", ">= 0.31"
+  spec.add_development_dependency "minitest-power_assert", ">= 0.2"
 end
