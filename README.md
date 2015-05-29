@@ -13,13 +13,14 @@ I've design this library for following purpose.
 Currently you can use low-level inteface of mediakit!
 
 * [x] low-level interface
-  * [x] execute command for ffmpeg
+  * [x] execute command for ffmpeg as a code
   * [x] unit testing supports (fake driver)
   * [x] nice command setting
   * [x] read timeout setting
   * [x] shell escape for security
   * [x] ffmpeg instropection (retrive supported formats, codecs, encoders and decoders)
   * [x] logger support
+  * [ ] formats, codecs, encoders and decoders representation as a code
 * [ ] low-level ffprobe interface
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
