@@ -122,8 +122,8 @@ module Mediakit
         end
 
         def on_read(data)
-          @data << data
           @block.call(data)
+          @data << data
         end
 
         def on_close
