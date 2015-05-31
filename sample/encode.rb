@@ -16,7 +16,7 @@ def transcode_option(input, output)
     Mediakit::FFmpeg::Options::OutputFileOption.new(
       options: {
         'acodec' => 'mp3',
-        'vcodec' => 'flv',
+        'vcodec' => 'libx264',
         'vf' => 'crop=240:240:0:0',
         'ar' => '44100',
         'ab' => '128k',
@@ -32,5 +32,5 @@ output_path = File.expand_path(File.join(root, 'out.mov'))
 driver      = Mediakit::Drivers::FFmpeg.new
 ffmpeg      = Mediakit::FFmpeg.new(driver)
 options     = transcode_option(input_path, output_path)
-puts "$ #{ffmpeg.command(options)}"
-puts ffmpeg.run(options)
+puts "$ #{ffmpeg.command(options, nice: 10)}"
+puts ffmpeg.run(options, nice: 10, timeout: 10)
