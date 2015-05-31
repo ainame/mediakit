@@ -4,6 +4,7 @@ require 'timeout'
 require 'cool.io'
 require 'logger'
 require 'mediakit/process/shell_escape'
+require 'mediakit/utils/null_logger'
 
 module Mediakit
   module Process
@@ -17,10 +18,10 @@ module Mediakit
 
       attr_reader(:logger)
 
-      def initialize(timeout: nil, nice: 0, logger: nil)
+      def initialize(timeout: nil, nice: 0, logger: Logger.new(STDOUT))
         @timeout = timeout
         @nice = nice
-        @logger = logger || Logger.new(STDOUT)
+        @logger = logger || Mediakit::Utils::NullLogger.new
       end
 
       # @overload run(command, *args)
