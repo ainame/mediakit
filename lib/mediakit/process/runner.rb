@@ -38,11 +38,7 @@ module Mediakit
         begin
           stdin, stdout, stderr, wait_thread = Open3.popen3(command)
           stdin.close
-          output, error_output, exit_status = if @timeout
-                                                wait_with_timeout(stdout, stderr, wait_thread)
-                                              else
-                                                wait_without_timeout(stdout, stderr, wait_thread)
-                                              end
+          output, error_output, exit_status = wait(stdout, stderr, wait_thread)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         end
@@ -50,13 +46,7 @@ module Mediakit
         [output, error_output, exit_status]
       end
 
-      def wait_without_timeout(stdout, stderr, wait_thread)
-        wait_thread.join
-        exit_status = (wait_thread.value.exitstatus == 0)
-        [stdout.read, stderr.read, exit_status]
-      end
-
-      def wait_with_timeout(stdout, stderr, wait_thread)
+      def wait(stdout, stderr, wait_thread)
         begin
           setup_watchers(stdout, stderr)
           loop_thread = Thread.new { run_loop }
@@ -88,13 +78,13 @@ module Mediakit
       end
 
       def setup_watchers(stdout, stderr)
-        @timer = TimeoutTimer.new(@timeout, Thread.current)
-        @out_watcher = IOWatcher.new(stdout) { |data| @timer.update; logger.info(data) }
-        @err_watcher = IOWatcher.new(stderr) { |data| @timer.update; logger.error(data) }
+        @timer = @timeout ? TimeoutTimer.new(@timeout, Thread.current) : nil
+        @out_watcher = IOWatcher.new(stdout) { |data| @timer.update if @timer; logger.info(data) }
+        @err_watcher = IOWatcher.new(stderr) { |data| @timer.update if @timer; logger.error(data) }
         @loop = Coolio::Loop.new
         @out_watcher.attach(@loop)
         @err_watcher.attach(@loop)
-        @timer.attach(@loop)
+        @timer.attach(@loop) if @timer
       end
 
       def run_loop
