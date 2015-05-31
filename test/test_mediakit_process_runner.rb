@@ -35,10 +35,10 @@ class TestMediakitProcessRunner < Minitest::Test
   end
 
   def test_timeout_error
-    @timeout = 0.3
+    @timeout = 0.5
     # error with read timeout
     assert_raises(Timeout::Error) do
-      runner.run(@bin, '--sleep=0.5')
+      runner.run(@bin, '--sleep=0.4')
     end
 
     # no timeout error wtih output
@@ -61,7 +61,7 @@ class TestMediakitProcessRunner < Minitest::Test
   end
 
   def test_return_values
-    @timeout = 0.3
+    @timeout = 0.5
     out, err, status = runner.run(@bin, '--sleep=0.1 --progress')
     assert(out)
     assert(out.kind_of?(String))
