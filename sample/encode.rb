@@ -4,6 +4,9 @@ require "bundler/setup"
 require "mediakit"
 require 'pry'
 
+input_file = ARGV[0]
+exit(1) unless input_file
+
 def transcode_option(input, output)
   options = Mediakit::FFmpeg::Options.new(
     Mediakit::FFmpeg::Options::GlobalOption.new(
@@ -27,7 +30,7 @@ def transcode_option(input, output)
 end
 
 root        = File.expand_path(File.join(File.dirname(__FILE__), '../'))
-input_path  = File.expand_path(File.join(root, 'test/fixtures/sample1.mp4'))
+input_path  = File.expand_path(input_file)
 output_path = File.expand_path(File.join(root, 'out.mov'))
 driver      = Mediakit::Drivers::FFmpeg.new
 ffmpeg      = Mediakit::FFmpeg.new(driver)
