@@ -5,4 +5,6 @@ module Mediakit
   require 'mediakit/ffmpeg'
   require 'mediakit/ffprobe'
   require 'mediakit/initializers'
+
+  require 'mediakit/railtie' if defined?(Rails)
 end
