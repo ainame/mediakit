@@ -1,5 +1,4 @@
 require 'open3'
-require 'thread'
 require 'timeout'
 require 'cool.io'
 require 'logger'
@@ -135,7 +134,6 @@ module Mediakit
         DEFAULT_CHECK_INTERVAL = 0.1
 
         def initialize(duration, current_thread)
-          @mutex = Mutex.new
           @duration = duration
           @watched_at = Time.now
           @current_thread = current_thread
@@ -149,9 +147,7 @@ module Mediakit
         end
 
         def update
-          @mutex.synchronize do
-            @watched_at = Time.now
-          end
+          @watched_at = Time.now
         end
 
         private
