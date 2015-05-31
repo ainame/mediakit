@@ -12,8 +12,9 @@ output_file = ARGV[1] || 'out.mov'
 def transcode_option(input, output)
   options = Mediakit::FFmpeg::Options.new(
     Mediakit::FFmpeg::Options::GlobalOption.new(
-    'y' => true,
-    'threads' => 4,
+      'y' => true,
+      'threads' => 4,
+      't' => 10
     ),
     Mediakit::FFmpeg::Options::InputFileOption.new(
       options: nil,
@@ -35,7 +36,7 @@ end
 root        = File.expand_path(File.join(File.dirname(__FILE__), '../'))
 input_path  = File.expand_path(input_file)
 output_path = File.expand_path(File.join(root, 'out.mov'))
-ffmpeg      = Mediakit::FFmpeg.instance
+ffmpeg      = Mediakit::FFmpeg.create
 options     = transcode_option(input_path, output_path)
 puts "$ #{ffmpeg.command(options, nice: 10)}"
-puts ffmpeg.run(options, nice: 10, timeout: 10)
+puts ffmpeg.run(options, nice: 10, timeout: 30)

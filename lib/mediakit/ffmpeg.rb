@@ -7,7 +7,7 @@ module Mediakit
 
     attr_accessor(:codecs, :formats, :decoders, :encoders)
 
-    def self.create(driver = Medaikit::Drivers::FFmpeg.new)
+    def self.create(driver = Mediakit::Drivers::FFmpeg.new)
       @ffmpeg ||= new(driver)
     end
 
