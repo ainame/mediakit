@@ -43,6 +43,15 @@ class TestMediakitProcessRunner < Minitest::Test
 
     # no timeout error wtih output
     begin
+      runner.run(@bin, '--sleep=0.2 --progress')
+    rescue Timeout::Error => e
+      error = e
+    ensure
+      assert_nil(error)
+    end
+
+    error = nil
+    begin
       runner.run(@bin, '--sleep=0.4 --progress')
     rescue Timeout::Error => e
       error = e
