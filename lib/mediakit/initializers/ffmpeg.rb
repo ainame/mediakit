@@ -59,11 +59,11 @@ module Mediakit
           match = line.match(PATTERN)
           if match
             type = case match[:type]
-                   when "A"
+                   when 'A'
                      :audio
-                   when "V"
+                   when 'V'
                      :video
-                   when "S"
+                   when 'S'
                      :subtitle
                    else
                      :unknown
