@@ -3,6 +3,9 @@ require 'active_support/core_ext/string/inflections'
 module Mediakit
   module Initializers
     class FFmpeg
+      class UnknownTypeError < StandardError
+      end
+
       class Base
         attr_reader :items
 
@@ -58,25 +61,35 @@ module Mediakit
         def create_item(line)
           match = line.match(PATTERN)
           if match
-            type = case match[:type]
-                   when 'A'
-                     :audio
-                   when 'V'
-                     :video
-                   when 'S'
-                     :subtitle
-                   else
-                     :unknown
-                   end
             decode = match[:decode] != '.'
             encode = match[:encode] != '.'
-            decoders = match[:decoders] ? match[:decoders].split(' ') : (decode ? [match[:name]] : nil)
-            encoders = match[:encoders] ? match[:encoders].split(' ') : (encode ? [match[:name]] : nil)
-            intra_frame = match[:intra_frame] != '.'
-            lossy = match[:lossy] != '.'
-            lossless = match[:lossless] != '.'
-
-            Mediakit::FFmpeg::Codec.new(match[:name], match[:desc], type, decode, encode, decoders, encoders, intra_frame, lossy, lossless)
+            attributes = {
+              name: match[:name],
+              desc: match[:desc],
+              decode: decode,
+              encode: encode,
+              decoders: match[:decoders] ? match[:decoders].split(' ') : (decode ? [match[:name]] : nil),
+              encoders: match[:encoders] ? match[:encoders].split(' ') : (encode ? [match[:name]] : nil),
+              intra_frame: match[:intra_frame] != '.',
+              lossy: match[:lossy] != '.',
+              lossless: match[:lossless] != '.'
+            }
+            case match[:type]
+            when 'V'
+              Mediakit::FFmpeg::Codecs::Video::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :video)
+              )
+            when 'A'
+              Mediakit::FFmpeg::Codecs::Audio::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :audio)
+              )
+            when 'S'
+              Mediakit::FFmpeg::Codecs::Subtitle::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+              )
+            else
+              raise(UnknownTypeError)
+            end
           end
         end
       end
@@ -100,10 +113,15 @@ module Mediakit
         def create_item(line)
           match = line.match(PATTERN)
           if match
-            demuxing = match[:demuxing] == 'D'
-            muxing = match[:muxing] == 'E'
-
-            Mediakit::FFmpeg::Format.new(match[:name], match[:desc], demuxing, muxing)
+            attributes = {
+              name: match[:name],
+              desc: match[:desc],
+              demuxing: match[:demuxing] == 'D',
+              muxing: match[:muxing] == 'E'
+            }
+            Mediakit::FFmpeg::Formats::Base.define_subclass(
+              "Format#{attributes[:name].classify}", attributes
+            )
           end
         end
       end
@@ -137,23 +155,31 @@ module Mediakit
         def create_item(line)
           match =  line.match(PATTERN)
           if match
-            type =  case match[:type]
-                    when 'V'
-                      :video
-                    when 'A'
-                      :audio
-                    when 'S'
-                      :subtitle
-                    else
-                      :unknown
-                    end
-            frame_leval =  match[:frame_level] !=  '.'
-            slice_leval =  match[:slice_level] !=  '.'
-            experimental =  match[:experimental] !=  '.'
-            horizon_band =  match[:horizon_band] !=  '.'
-            direct_rendering_method =  match[:direct_rendering_method] !=  '.'
-
-            Mediakit::FFmpeg::Decoder.new(match[:name], match[:desc], type, frame_leval, slice_leval, experimental, horizon_band, direct_rendering_method)
+            attributes = {
+              name: match[:name],
+              desc: match[:desc],
+              frame_level:  match[:frame_level] !=  '.',
+              slice_level:  match[:slice_level] !=  '.',
+              experimental:  match[:experimental] !=  '.',
+              horizon_band:  match[:horizon_band] !=  '.',
+              direct_rendering_method:  match[:direct_rendering_method] !=  '.'
+            }
+            case match[:type]
+            when 'V'
+              Mediakit::FFmpeg::Decoders::Video::Base.define_subclass(
+                "Decoder#{attributes[:name].classify}", attributes.merge(type: :video)
+              )
+            when 'A'
+              Mediakit::FFmpeg::Decoders::Audio::Base.define_subclass(
+                "Decoder#{attributes[:name].classify}", attributes.merge(type: :audio)
+              )
+            when 'S'
+              Mediakit::FFmpeg::Decoders::Subtitle::Base.define_subclass(
+                "Decoder#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+              )
+            else
+              raise(UnknownTypeError)
+            end
           end
         end
       end
@@ -187,23 +213,32 @@ module Mediakit
         def create_item(line)
           match =  line.match(PATTERN)
           if match
-            type =  case match[:type]
-                    when 'V'
-                      :video
-                    when 'A'
-                      :audio
-                    when 'S'
-                      :subtitle
-                    else
-                      :unknown
-                    end
-            frame_level =  match[:frame_level] !=  '.'
-            slice_level =  match[:slice_level] !=  '.'
-            experimental =  match[:experimental] !=  '.'
-            horizon_band =  match[:horizon_band] !=  '.'
-            direct_rendering_method =  match[:direct_rendering_method] !=  '.'
+            attributes = {
+              name: match[:name],
+              desc: match[:desc],
+              frame_level:  match[:frame_level] !=  '.',
+              slice_level:  match[:slice_level] !=  '.',
+              experimental:  match[:experimental] !=  '.',
+              horizon_band:  match[:horizon_band] !=  '.',
+              direct_rendering_method:  match[:direct_rendering_method] !=  '.'
+            }
 
-            Mediakit::FFmpeg::Encoder.new(match[:name], match[:desc], type, frame_level, slice_level, experimental, horizon_band, direct_rendering_method)
+            case match[:type]
+            when 'V'
+              Mediakit::FFmpeg::Encoders::Video::Base.define_subclass(
+                "Encoder#{attributes[:name].classify}", attributes.merge(type: :video)
+              )
+            when 'A'
+              Mediakit::FFmpeg::Encoders::Audio::Base.define_subclass(
+                "Encoder#{attributes[:name].classify}", attributes.merge(type: :audio)
+              )
+            when 'S'
+              Mediakit::FFmpeg::Encoders::Subtitle::Base.define_subclass(
+                "Encoder#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+              )
+            else
+              raise(UnknownTypeError)
+            end
           end
         end
       end

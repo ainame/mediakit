@@ -1,5 +1,6 @@
 require 'mediakit/drivers'
 require 'mediakit/ffmpeg/options'
+require 'mediakit/utils/subclass_definer'
 
 module Mediakit
   class FFmpeg
@@ -29,20 +30,89 @@ module Mediakit
       @driver.command(args, driver_options)
     end
 
-    Codec = Struct.new(:name, :desc, :type, :decode, :encode, :decoders, :encoders, :intra_frame, :lossy, :lossless) do |klass|
-      def to_s; name; end
+    module Codecs
+      class Base
+        include Utils::SubclassDefiner
+
+        def self.using_attributes
+          [:name, :desc, :type, :decode, :encode, :decoders, :encoders, :intra_frame, :lossy, :lossless]
+        end
+      end
+
+      module Audio
+        class Base < Codecs::Base
+        end
+      end
+
+      module Video
+        class Base < Codecs::Base
+        end
+      end
+
+      module Subtitle
+        class Base < Codecs::Base
+        end
+      end
     end
 
-    Format = Struct.new(:name, :desc, :demuxing, :muxing) do |klass|
-      def to_s; name; end
+    module Formats
+      class Base
+        include Utils::SubclassDefiner
+
+        def self.using_attributes
+          [:name, :desc, :demuxing, :muxing]
+        end
+      end
     end
 
-    Encoder = Struct.new(:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method) do |klass|
-      def to_s; name; end
+    module Encoders
+      class Base
+        include Utils::SubclassDefiner
+
+        def self.using_attributes
+          [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
+        end
+      end
+
+      module Audio
+        class Base < Encoders::Base
+        end
+      end
+
+      module Video
+        class Base < Encoders::Base
+        end
+      end
+
+      module Subtitle
+        class Base < Encoders::Base
+        end
+      end
     end
 
-    Decoder = Struct.new(:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method) do |klass|
-      def to_s; name; end
+    module Decoders
+      class Base
+        include Utils::SubclassDefiner
+
+        def self.using_attributes
+          [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
+        end
+      end
+
+      module Audio
+        class Base < Decoders::Base
+        end
+      end
+
+      module Video
+        class Base < Decoders::Base
+        end
+      end
+
+      module Subtitle
+        class Base < Decoders::Base
+        end
+      end
     end
   end
 end
