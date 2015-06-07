@@ -22,6 +22,6 @@ class TestMediakitInitializers < Minitest::Test
     assert(ffmpeg.decoders.size > 0)
 
     codec = ffmpeg.codecs[0]
-    assert { codec.kind_of?(Mediakit::FFmpeg::Codec) }
+    assert { codec <= Mediakit::FFmpeg::Codecs::Base }
   end
 end
