@@ -1,6 +1,6 @@
 # Mediakit
 
-[![Circle CI](https://circleci.com/gh/ainame/mediakit/tree/master.svg?style=svg)](https://circleci.com/gh/ainame/mediakit/tree/master)
+[![Circle CI](https://circleci.com/gh/ainame/mediakit/tree/master.svg?style=svg)](https://circleci.com/gh/ainame/mediakit/tree/master) [![Code Climate](https://codeclimate.com/github/ainame/mediakit/badges/gpa.svg)](https://codeclimate.com/github/ainame/mediakit)
 
 mediakit is the libraries for ffmpeg and sox backed media manipulation something.
 I've design this library for following purpose.
