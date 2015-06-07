@@ -31,6 +31,7 @@ EOS
                   val
                 end
               end
+              private_class_method :new
             end.freeze
           )
         end

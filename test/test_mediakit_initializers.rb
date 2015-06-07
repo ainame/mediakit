@@ -23,5 +23,8 @@ class TestMediakitInitializers < Minitest::Test
 
     codec = ffmpeg.codecs[0]
     assert { codec <= Mediakit::FFmpeg::Codecs::Base }
+    assert_raises(NoMethodError) do
+      codec.new
+    end
   end
 end
