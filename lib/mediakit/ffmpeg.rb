@@ -1,6 +1,6 @@
 require 'mediakit/drivers'
 require 'mediakit/ffmpeg/options'
-require 'mediakit/utils/subclass_definer'
+require 'mediakit/utils/constant_class_definer'
 
 module Mediakit
   class FFmpeg
@@ -32,7 +32,7 @@ module Mediakit
 
     module Codecs
       class Base
-        include Utils::SubclassDefiner
+        include Utils::ConstantClassDefiner
 
         def self.using_attributes
           [:name, :desc, :type, :decode, :encode, :decoders, :encoders, :intra_frame, :lossy, :lossless]
@@ -57,7 +57,7 @@ module Mediakit
 
     module Formats
       class Base
-        include Utils::SubclassDefiner
+        include Utils::ConstantClassDefiner
 
         def self.using_attributes
           [:name, :desc, :demuxing, :muxing]
@@ -67,7 +67,7 @@ module Mediakit
 
     module Encoders
       class Base
-        include Utils::SubclassDefiner
+        include Utils::ConstantClassDefiner
 
         def self.using_attributes
           [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
@@ -92,7 +92,7 @@ module Mediakit
 
     module Decoders
       class Base
-        include Utils::SubclassDefiner
+        include Utils::ConstantClassDefiner
 
         def self.using_attributes
           [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]

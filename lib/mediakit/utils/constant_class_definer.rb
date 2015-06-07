@@ -2,7 +2,7 @@ require 'active_support/core_ext/module/introspection'
 
 module Mediakit
   module Utils
-    module SubclassDefiner
+    module ConstantClassDefiner
       def self.included(base)
         base.extend(ClassMethods)
       end
