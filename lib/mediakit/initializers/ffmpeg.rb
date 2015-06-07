@@ -105,11 +105,11 @@ module Mediakit
             attributes = {
               name: match[:name],
               desc: match[:desc],
-              frame_level:  match[:frame_level] !=  '.',
-              slice_level:  match[:slice_level] !=  '.',
-              experimental:  match[:experimental] !=  '.',
-              horizon_band:  match[:horizon_band] !=  '.',
-              direct_rendering_method:  match[:direct_rendering_method] !=  '.'
+              frame_level: match[:frame_level] != '.',
+              slice_level: match[:slice_level] != '.',
+              experimental: match[:experimental] != '.',
+              horizon_band: match[:horizon_band] != '.',
+              direct_rendering_method: match[:direct_rendering_method] != '.'
             }
             case match[:type]
             when 'V'
@@ -163,11 +163,11 @@ module Mediakit
             attributes = {
               name: match[:name],
               desc: match[:desc],
-              frame_level:  match[:frame_level] !=  '.',
-              slice_level:  match[:slice_level] !=  '.',
-              experimental:  match[:experimental] !=  '.',
-              horizon_band:  match[:horizon_band] !=  '.',
-              direct_rendering_method:  match[:direct_rendering_method] !=  '.'
+              frame_level: match[:frame_level] != '.',
+              slice_level: match[:slice_level] != '.',
+              experimental: match[:experimental] != '.',
+              horizon_band: match[:horizon_band] != '.',
+              direct_rendering_method: match[:direct_rendering_method] != '.'
             }
 
             case match[:type]
