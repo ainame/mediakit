@@ -41,59 +41,6 @@ module Mediakit
         end
       end
 
-      class CodecInitializer < Base
-        DELIMITER_FOR_CODECS = "\n -------\n".freeze
-        SUPPORT_PATTERN = /(?<support>(?<decode>[D.])(?<encode>[E.])(?<type>[VAS.])(?<intra_frame>[I.])(?<lossy>[L.])(?<lossless>[S.]))/.freeze
-        DESCRIPTION_PATTERN = /.*?( \(decoders: (?<decoders>.+?) \)| \(encoders: (?<encoders>.+?) \))*/.freeze
-        PATTERN = /\A\s*#{SUPPORT_PATTERN}\s+(?<name>\w+)\s+(?<desc>(#{DESCRIPTION_PATTERN}))\z/.freeze
-
-        def item_type
-          'codecs'
-        end
-
-        def raw_items
-          options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('codecs' => true))
-          output, _, _ = @command.run(options, logger: nil)
-          return [] if output.nil? || output.empty?
-          output.split(DELIMITER_FOR_CODECS)[1].each_line.to_a
-        end
-
-        def create_item(line)
-          match = line.match(PATTERN)
-          if match
-            decode = match[:decode] != '.'
-            encode = match[:encode] != '.'
-            attributes = {
-              name: match[:name],
-              desc: match[:desc],
-              decode: decode,
-              encode: encode,
-              decoders: match[:decoders] ? match[:decoders].split(' ') : (decode ? [match[:name]] : nil),
-              encoders: match[:encoders] ? match[:encoders].split(' ') : (encode ? [match[:name]] : nil),
-              intra_frame: match[:intra_frame] != '.',
-              lossy: match[:lossy] != '.',
-              lossless: match[:lossless] != '.'
-            }
-            case match[:type]
-            when 'V'
-              Mediakit::FFmpeg::Codecs::Video::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :video)
-              )
-            when 'A'
-              Mediakit::FFmpeg::Codecs::Audio::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :audio)
-              )
-            when 'S'
-              Mediakit::FFmpeg::Codecs::Subtitle::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :subtitle)
-              )
-            else
-              raise(UnknownTypeError)
-            end
-          end
-        end
-      end
-
       class FormatInitializer < Base
         DELIMITER_FOR_FORMATS = "\n --\n".freeze
         SUPPORT_PATTERN = /(?<support>(?<demuxing>[D.\s])(?<muxing>[E.\s]))/.freeze
@@ -235,6 +182,69 @@ module Mediakit
             when 'S'
               Mediakit::FFmpeg::Encoders::Subtitle::Base.define_subclass(
                 "Encoder#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+              )
+            else
+              raise(UnknownTypeError)
+            end
+          end
+        end
+      end
+
+      class CodecInitializer < Base
+        DELIMITER_FOR_CODECS = "\n -------\n".freeze
+        SUPPORT_PATTERN = /(?<support>(?<decode>[D.])(?<encode>[E.])(?<type>[VAS.])(?<intra_frame>[I.])(?<lossy>[L.])(?<lossless>[S.]))/.freeze
+        DESCRIPTION_PATTERN = /.*?( \(decoders: (?<decoders>.+?) \)| \(encoders: (?<encoders>.+?) \))*/.freeze
+        PATTERN = /\A\s*#{SUPPORT_PATTERN}\s+(?<name>\w+)\s+(?<desc>(#{DESCRIPTION_PATTERN}))\z/.freeze
+
+        def item_type
+          'codecs'
+        end
+
+        def raw_items
+          options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('codecs' => true))
+          output, _, _ = @command.run(options, logger: nil)
+          return [] if output.nil? || output.empty?
+          output.split(DELIMITER_FOR_CODECS)[1].each_line.to_a
+        end
+
+        def find_decoders(decoders)
+          return unless decoders
+          decoders.map { |name| @command.decoders.find { |decoder| decoder.name == name } }
+        end
+
+        def find_encoders(encoders)
+          return unless encoders
+          encoders.map { |name| @command.encoders.find { |encoder| encoder.name == name } }
+        end
+
+        def create_item(line)
+          match = line.match(PATTERN)
+          if match
+            decode = match[:decode] != '.'
+            encode = match[:encode] != '.'
+            attributes = {
+              name: match[:name],
+              desc: match[:desc],
+              decode: decode,
+              encode: encode,
+              decoders: find_decoders(match[:decoders] ? match[:decoders].split(' ') : (decode ? [match[:name]] : nil)),
+              encoders: find_encoders(match[:encoders] ? match[:encoders].split(' ') : (encode ? [match[:name]] : nil)),
+              intra_frame: match[:intra_frame] != '.',
+              lossy: match[:lossy] != '.',
+              lossless: match[:lossless] != '.'
+            }
+            case match[:type]
+            when 'V'
+              Mediakit::FFmpeg::Codecs::Video::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :video)
+              )
+            when 'A'
+              Mediakit::FFmpeg::Codecs::Audio::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :audio)
+              )
+            when 'S'
+              Mediakit::FFmpeg::Codecs::Subtitle::Base.define_subclass(
+                "Codec#{attributes[:name].classify}", attributes.merge(type: :subtitle)
               )
             else
               raise(UnknownTypeError)
