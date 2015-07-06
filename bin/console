@@ -11,6 +11,6 @@ require "mediakit"
 # Pry.start
 
 ffmpeg = Mediakit::FFmpeg.create
-Mediakit::Initializers.setup(ffmpeg)
+ffmpeg.init
 require "pry"
 Pry.start
