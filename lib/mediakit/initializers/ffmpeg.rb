@@ -3,6 +3,13 @@ require 'active_support/core_ext/string/inflections'
 module Mediakit
   module Initializers
     class FFmpeg
+      def self.setup(ffmpeg)
+        Mediakit::Initializers::FFmpeg::FormatInitializer.new(ffmpeg).call
+        Mediakit::Initializers::FFmpeg::DecoderInitializer.new(ffmpeg).call
+        Mediakit::Initializers::FFmpeg::EncoderInitializer.new(ffmpeg).call
+        Mediakit::Initializers::FFmpeg::CodecInitializer.new(ffmpeg).call
+      end
+
       class UnknownTypeError < StandardError
       end
 

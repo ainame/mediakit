@@ -18,10 +18,7 @@ module Mediakit
     end
 
     def init
-      Mediakit::Initializers::FFmpeg::CodecInitializer.new(self).call
-      Mediakit::Initializers::FFmpeg::FormatInitializer.new(self).call
-      Mediakit::Initializers::FFmpeg::DecoderInitializer.new(self).call
-      Mediakit::Initializers::FFmpeg::EncoderInitializer.new(self).call
+      Mediakit::Initializers::FFmpeg.setup(self)
     end
 
     # execute runners with options object
