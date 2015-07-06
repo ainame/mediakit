@@ -20,7 +20,7 @@ you can give attribute keys which only defined by `using_attributes` and that is
 EOS
           ) unless Set.new(using_attributes) == Set.new(attributes.keys)
 
-          klass_name = klass.to_s.classify
+          klass_name = klass.to_s
           return if parent.const_defined?(klass_name)
 
           parent.const_set(

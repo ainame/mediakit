@@ -67,7 +67,7 @@ module Mediakit
               muxing: match[:muxing] == 'E'
             }
             Mediakit::FFmpeg::Formats::Base.define_subclass(
-              "Format#{attributes[:name].classify}", attributes
+              "FORMAT_#{attributes[:name].underscore.upcase}", attributes
             )
           end
         end
@@ -114,15 +114,15 @@ module Mediakit
             case match[:type]
             when 'V'
               Mediakit::FFmpeg::Decoders::Video::Base.define_subclass(
-                "Decoder#{attributes[:name].classify}", attributes.merge(type: :video)
+                "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
               Mediakit::FFmpeg::Decoders::Audio::Base.define_subclass(
-                "Decoder#{attributes[:name].classify}", attributes.merge(type: :audio)
+                "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
               Mediakit::FFmpeg::Decoders::Subtitle::Base.define_subclass(
-                "Decoder#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+                "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
               raise(UnknownTypeError)
@@ -173,15 +173,15 @@ module Mediakit
             case match[:type]
             when 'V'
               Mediakit::FFmpeg::Encoders::Video::Base.define_subclass(
-                "Encoder#{attributes[:name].classify}", attributes.merge(type: :video)
+                "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
               Mediakit::FFmpeg::Encoders::Audio::Base.define_subclass(
-                "Encoder#{attributes[:name].classify}", attributes.merge(type: :audio)
+                "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
               Mediakit::FFmpeg::Encoders::Subtitle::Base.define_subclass(
-                "Encoder#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+                "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
               raise(UnknownTypeError)
@@ -236,15 +236,15 @@ module Mediakit
             case match[:type]
             when 'V'
               Mediakit::FFmpeg::Codecs::Video::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :video)
+                "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
               Mediakit::FFmpeg::Codecs::Audio::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :audio)
+                "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
               Mediakit::FFmpeg::Codecs::Subtitle::Base.define_subclass(
-                "Codec#{attributes[:name].classify}", attributes.merge(type: :subtitle)
+                "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
               raise(UnknownTypeError)
