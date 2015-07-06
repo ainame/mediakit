@@ -7,10 +7,7 @@ class TestMediakitInitializers < Minitest::Test
 
   def test_initializer
     ffmpeg = Mediakit::FFmpeg.new(Mediakit::Drivers::FFmpeg.new)
-    Mediakit::Initializers::FFmpeg::CodecInitializer.new(ffmpeg).call
-    Mediakit::Initializers::FFmpeg::FormatInitializer.new(ffmpeg).call
-    Mediakit::Initializers::FFmpeg::DecoderInitializer.new(ffmpeg).call
-    Mediakit::Initializers::FFmpeg::EncoderInitializer.new(ffmpeg).call
+    ffmpeg.init
 
     assert(ffmpeg.codecs.kind_of?(Array))
     assert(ffmpeg.codecs.size > 0)
@@ -22,7 +19,7 @@ class TestMediakitInitializers < Minitest::Test
     assert(ffmpeg.decoders.size > 0)
 
     codec = ffmpeg.codecs[0]
-    assert { codec <= Mediakit::FFmpeg::Codecs::Base }
+    assert { Mediakit::FFmpeg::Codecs === codec  }
     assert_raises(NoMethodError) do
       codec.new
     end

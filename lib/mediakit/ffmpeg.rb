@@ -6,7 +6,7 @@ module Mediakit
   class FFmpeg
     class FFmpegError < StandardError; end
 
-    attr_accessor(:codecs, :formats, :decoders, :encoders)
+    attr_reader(:codecs, :formats, :decoders, :encoders)
 
     def self.create(driver = Mediakit::Drivers::FFmpeg.new)
       @ffmpeg ||= new(driver)
@@ -15,6 +15,13 @@ module Mediakit
     def initialize(driver)
       @driver = driver
       @codecs, @formats, @decoders, @encoders = [], [], [], []
+    end
+
+    def init
+      Mediakit::Initializers::FFmpeg::CodecInitializer.new(self).call
+      Mediakit::Initializers::FFmpeg::FormatInitializer.new(self).call
+      Mediakit::Initializers::FFmpeg::DecoderInitializer.new(self).call
+      Mediakit::Initializers::FFmpeg::EncoderInitializer.new(self).call
     end
 
     # execute runners with options object
@@ -30,7 +37,24 @@ module Mediakit
       @driver.command(args, driver_options)
     end
 
+    module BaseTypeMatcher
+      def self.included(included_class)
+        define_method(:===) do |other|
+          return true if included_class::Base >= other
+          false
+        end
+
+        included_class.send(:module_function, :===)
+      end
+    end
+
     module Codecs
+      def ===(other)
+        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
+        false
+      end
+      module_function :===
+
       class Base
         include Utils::ConstantClassDefiner
 
@@ -40,16 +64,22 @@ module Mediakit
       end
 
       module Audio
+        include(BaseTypeMatcher)
+
         class Base < Codecs::Base
         end
       end
 
       module Video
+        include(BaseTypeMatcher)
+
         class Base < Codecs::Base
         end
       end
 
       module Subtitle
+        include(BaseTypeMatcher)
+
         class Base < Codecs::Base
         end
       end
@@ -66,6 +96,12 @@ module Mediakit
     end
 
     module Encoders
+      def ===(other)
+        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
+        false
+      end
+      module_function :===
+
       class Base
         include Utils::ConstantClassDefiner
 
@@ -75,22 +111,32 @@ module Mediakit
       end
 
       module Audio
+        include(BaseTypeMatcher)
         class Base < Encoders::Base
         end
       end
 
       module Video
+        include(BaseTypeMatcher)
         class Base < Encoders::Base
         end
       end
 
       module Subtitle
+        include(BaseTypeMatcher)
         class Base < Encoders::Base
         end
       end
     end
 
     module Decoders
+      def ===(other)
+        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
+        false
+      end
+      module_function :===
+
+
       class Base
         include Utils::ConstantClassDefiner
 
@@ -100,16 +146,19 @@ module Mediakit
       end
 
       module Audio
+        include(BaseTypeMatcher)
         class Base < Decoders::Base
         end
       end
 
       module Video
+        include(BaseTypeMatcher)
         class Base < Decoders::Base
         end
       end
 
       module Subtitle
+        include(BaseTypeMatcher)
         class Base < Decoders::Base
         end
       end
