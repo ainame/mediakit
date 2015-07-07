@@ -24,7 +24,7 @@ module Mediakit
 you can give attribute keys which only defined by `using_attributes` and that is satisfied all keys.'
 EOS
           ) unless Set.new(using_attributes) == Set.new(attributes.keys)
-          return if self.const_defined?(name)
+          return self.const_get(name) if self.const_defined?(name)
           self.const_set(name, new(attributes).freeze)
         end
       end
