@@ -29,4 +29,15 @@ class TestMediakitFfmpeg < Minitest::Test
     assert_nil(@fake_driver.nice)
     assert_nil(@fake_driver.timeout)
   end
+
+  def test_codecs
+    ffmpeg = Mediakit::FFmpeg.new(Mediakit::Drivers::FFmpeg.new)
+    ffmpeg.init
+    assert { Mediakit::FFmpeg::Codec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
+    assert { Mediakit::FFmpeg::AudioCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
+    assert { Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::VideoCodec::CODEC_MPEG4 }
+    assert { !(Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
+    assert { !(Mediakit::FFmpeg::SubtitleCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
+    assert { !(Mediakit::FFmpeg::Encoder === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
+  end
 end

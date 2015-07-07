@@ -26,7 +26,6 @@ EOS
   spec.add_runtime_dependency "cool.io", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "pry", '~> 0.10'
-  spec.add_development_dependency "pry-byebug", '~> 3'
   spec.add_development_dependency "ruby-debug-ide", "~> 0.4"
   spec.add_development_dependency "yard", "> 0.8"
   spec.add_development_dependency "rubocop", ">= 0.31"
