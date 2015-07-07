@@ -33,11 +33,11 @@ class TestMediakitFfmpeg < Minitest::Test
   def test_codecs
     ffmpeg = Mediakit::FFmpeg.new(Mediakit::Drivers::FFmpeg.new)
     ffmpeg.init
-    assert { Mediakit::FFmpeg::Codecs === Mediakit::FFmpeg::Codecs::Audio::CODEC_MP3 }
-    assert { Mediakit::FFmpeg::Codecs::Audio === Mediakit::FFmpeg::Codecs::Audio::CODEC_MP3 }
-    assert { Mediakit::FFmpeg::Codecs::Video === Mediakit::FFmpeg::Codecs::Video::CODEC_MPEG4 }
-    assert { !(Mediakit::FFmpeg::Codecs::Video === Mediakit::FFmpeg::Codecs::Audio::CODEC_MP3) }
-    assert { !(Mediakit::FFmpeg::Codecs::Subtitle === Mediakit::FFmpeg::Codecs::Audio::CODEC_MP3) }
-    assert { !(Mediakit::FFmpeg::Encoders === Mediakit::FFmpeg::Codecs::Audio::CODEC_MP3) }
+    assert { Mediakit::FFmpeg::Codec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
+    assert { Mediakit::FFmpeg::AudioCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
+    assert { Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::VideoCodec::CODEC_MPEG4 }
+    assert { !(Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
+    assert { !(Mediakit::FFmpeg::SubtitleCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
+    assert { !(Mediakit::FFmpeg::Encoder === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
   end
 end

@@ -19,7 +19,7 @@ class TestMediakitInitializers < Minitest::Test
     assert(ffmpeg.decoders.size > 0)
 
     codec = ffmpeg.codecs[0]
-    assert { Mediakit::FFmpeg::Codecs === codec  }
+    assert { Mediakit::FFmpeg::Codec === codec  }
     assert_raises(NoMethodError) do
       codec.new
     end

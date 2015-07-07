@@ -1,10 +1,11 @@
 require 'mediakit/drivers'
 require 'mediakit/ffmpeg/options'
-require 'mediakit/utils/constant_class_definer'
+require 'mediakit/utils/constant_factory'
 
 module Mediakit
   class FFmpeg
-    class FFmpegError < StandardError; end
+    class FFmpegError < StandardError;
+    end
 
     attr_reader(:codecs, :formats, :decoders, :encoders)
 
@@ -13,7 +14,7 @@ module Mediakit
     end
 
     def initialize(driver)
-      @driver = driver
+      @driver                                 = driver
       @codecs, @formats, @decoders, @encoders = [], [], [], []
     end
 
@@ -45,120 +46,63 @@ module Mediakit
       end
     end
 
-    module Codecs
-      def ===(other)
-        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
-        false
-      end
-      module_function :===
-
-      class Base
-        include Utils::ConstantClassDefiner
-
-        def self.using_attributes
-          [:name, :desc, :type, :decode, :encode, :decoders, :encoders, :intra_frame, :lossy, :lossless]
-        end
+    class Format
+      def self.using_attributes
+        [:name, :desc, :demuxing, :muxing]
       end
 
-      module Audio
-        include(BaseTypeMatcher)
-
-        class Base < Codecs::Base
-        end
-      end
-
-      module Video
-        include(BaseTypeMatcher)
-
-        class Base < Codecs::Base
-        end
-      end
-
-      module Subtitle
-        include(BaseTypeMatcher)
-
-        class Base < Codecs::Base
-        end
-      end
+      include Utils::ConstantFactory
     end
 
-    module Formats
-      class Base
-        include Utils::ConstantClassDefiner
-
-        def self.using_attributes
-          [:name, :desc, :demuxing, :muxing]
-        end
+    class Codec
+      def self.using_attributes
+        [:name, :desc, :type, :decode, :encode, :decoders, :encoders, :intra_frame, :lossy, :lossless]
       end
+
+      include Utils::ConstantFactory
     end
 
-    module Encoders
-      def ===(other)
-        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
-        false
-      end
-      module_function :===
-
-      class Base
-        include Utils::ConstantClassDefiner
-
-        def self.using_attributes
-          [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
-        end
-      end
-
-      module Audio
-        include(BaseTypeMatcher)
-        class Base < Encoders::Base
-        end
-      end
-
-      module Video
-        include(BaseTypeMatcher)
-        class Base < Encoders::Base
-        end
-      end
-
-      module Subtitle
-        include(BaseTypeMatcher)
-        class Base < Encoders::Base
-        end
-      end
+    class AudioCodec < Codec
     end
 
-    module Decoders
-      def ===(other)
-        return true if Audio::Base >= other || Video::Base >= other || Subtitle::Base >= other
-        false
-      end
-      module_function :===
+    class VideoCodec < Codec
+    end
 
+    class SubtitleCodec < Codec
+    end
 
-      class Base
-        include Utils::ConstantClassDefiner
-
-        def self.using_attributes
-          [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
-        end
+    class Encoder
+      def self.using_attributes
+        [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
       end
 
-      module Audio
-        include(BaseTypeMatcher)
-        class Base < Decoders::Base
-        end
+      include Utils::ConstantFactory
+    end
+
+    class AudioEncoder < Encoder
+    end
+
+    class VideoEncoder < Encoder
+    end
+
+    class SubtitleEncoder < Encoder
+    end
+
+    class Decoder
+      def self.using_attributes
+        [:name, :desc, :type, :frame_level, :slice_level, :experimental, :horizon_band, :direct_rendering_method]
       end
 
-      module Video
-        include(BaseTypeMatcher)
-        class Base < Decoders::Base
-        end
-      end
+      include Utils::ConstantFactory
+    end
 
-      module Subtitle
-        include(BaseTypeMatcher)
-        class Base < Decoders::Base
-        end
-      end
+    class AudioDecoder < Decoder
+    end
+
+    class VideoDecoder < Decoder
+    end
+
+    class SubtitleDecoder < Decoder
     end
   end
 end

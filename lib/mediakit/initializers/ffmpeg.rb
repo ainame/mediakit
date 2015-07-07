@@ -73,7 +73,7 @@ module Mediakit
               demuxing: match[:demuxing] == 'D',
               muxing: match[:muxing] == 'E'
             }
-            Mediakit::FFmpeg::Formats::Base.define_subclass(
+            Mediakit::FFmpeg::Format.create_constant(
               "FORMAT_#{attributes[:name].underscore.upcase}", attributes
             )
           end
@@ -120,15 +120,15 @@ module Mediakit
             }
             case match[:type]
             when 'V'
-              Mediakit::FFmpeg::Decoders::Video::Base.define_subclass(
+              Mediakit::FFmpeg::VideoDecoder.create_constant(
                 "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
-              Mediakit::FFmpeg::Decoders::Audio::Base.define_subclass(
+              Mediakit::FFmpeg::AudioDecoder.create_constant(
                 "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
-              Mediakit::FFmpeg::Decoders::Subtitle::Base.define_subclass(
+              Mediakit::FFmpeg::SubtitleDecoder.create_constant(
                 "DECODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
@@ -179,15 +179,15 @@ module Mediakit
 
             case match[:type]
             when 'V'
-              Mediakit::FFmpeg::Encoders::Video::Base.define_subclass(
+              Mediakit::FFmpeg::VideoEncoder.create_constant(
                 "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
-              Mediakit::FFmpeg::Encoders::Audio::Base.define_subclass(
+              Mediakit::FFmpeg::AudioEncoder.create_constant(
                 "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
-              Mediakit::FFmpeg::Encoders::Subtitle::Base.define_subclass(
+              Mediakit::FFmpeg::SubtitleEncoder.create_constant(
                 "ENCODER_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
@@ -242,15 +242,15 @@ module Mediakit
             }
             case match[:type]
             when 'V'
-              Mediakit::FFmpeg::Codecs::Video::Base.define_subclass(
+              Mediakit::FFmpeg::VideoCodec.create_constant(
                 "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :video)
               )
             when 'A'
-              Mediakit::FFmpeg::Codecs::Audio::Base.define_subclass(
+              Mediakit::FFmpeg::AudioCodec.create_constant(
                 "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :audio)
               )
             when 'S'
-              Mediakit::FFmpeg::Codecs::Subtitle::Base.define_subclass(
+              Mediakit::FFmpeg::SubtitleCodec.create_constant(
                 "CODEC_#{attributes[:name].underscore.upcase}", attributes.merge(type: :subtitle)
               )
             else
