@@ -33,7 +33,10 @@ class TestMediakitFfmpeg < Minitest::Test
   def test_codecs
     ffmpeg = Mediakit::FFmpeg.new(Mediakit::Drivers::FFmpeg.new)
     ffmpeg.init
+
     assert { Mediakit::FFmpeg::Codec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
+    assert { Mediakit::FFmpeg::AudioCodec::CODEC_MP3.name == 'mp3' }
+    assert { Mediakit::FFmpeg::AudioCodec::CODEC_MP3.desc.match(/MP3 \(MPEG audio layer 3\)/) }
     assert { Mediakit::FFmpeg::AudioCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3 }
     assert { Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::VideoCodec::CODEC_MPEG4 }
     assert { !(Mediakit::FFmpeg::VideoCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }

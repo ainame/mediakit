@@ -20,7 +20,7 @@ Currently you can use low-level inteface of mediakit!
   * [x] shell escape for security
   * [x] ffmpeg instropection (retrive supported formats, codecs, encoders and decoders)
   * [x] logger support
-  * [ ] formats, codecs, encoders and decoders representation as a code
+  * [x] formats, codecs, encoders and decoders representation as a code
 * [ ] low-level ffprobe interface
 * [ ] high-level interface for ffmpeg
 * [ ] low-level interface for sox
@@ -125,7 +125,25 @@ assert_equal(exit_status, true)
 fake_driver.reset
 ```
 
+### Formats/Codecs/Decoders/Encoders
 
+FFmpeg has so many formats, codecs, decoders and encoders.
+So, mediakit provide constant values for presenting those resources as a code.
+
+```rb
+ffmpeg = Mediakit::FFmpeg.create
+ffmpeg.init
+
+# can use after call Mediakit::FFmpeg#init
+Mediakit::FFmpeg::AudioCodec::CODEC_MP3 #=> #<Mediakit::FFmpeg::AudioCodec:0x007fb514040ad0>
+Mediakit::FFmpeg::AudioCodec::CODEC_MP3.name #=> "mp3"
+Mediakit::FFmpeg::AudioCodec::CODEC_MP3.desc #=> "MP3 (MPEG audio layer 3)"
+...
+
+```
+
+These values reflect your ffmpeg binary build conditions by automate.
+`Mediakit::FFmpeg::AudioCodec::CODEC_MP3` is just a instance of Mediakit::FFmpeg::AudioCodec class.
 ### High Level Interface
 
 TBD
