@@ -3,12 +3,14 @@ module Mediakit
     module ConstantFactory
       def self.included(base)
         base.extend(ClassMethods)
-        base.class_eval { attr_reader(*(base.using_attributes)) }
-      end
+        base.class_eval do
+          attr_reader(*(base.using_attributes))
 
-      def initialize(attributes)
-        self.class.using_attributes do |key|
-         send("#{k}=", attributes[key])
+          def initialize(attributes)
+            self.class.using_attributes.each do |key|
+              instance_variable_set("@#{key}", attributes[key])
+            end
+          end
         end
       end
 
