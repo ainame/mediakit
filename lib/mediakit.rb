@@ -1,4 +1,4 @@
-require "mediakit/version"
+require 'mediakit/version'
 
 module Mediakit
   require 'mediakit/drivers'

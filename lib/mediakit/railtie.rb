@@ -1,8 +1,8 @@
 module Mediakit
-  module Railtie < ::Rails::Railtie
+  class Railtie < ::Rails::Railtie
     initializer('mediakit.initialize_ffmpeg') do
       ffmpeg = Mediakit::FFmpeg.create
-      Mediakit::Initializers.setup(ffmpeg)
+      Mediakit::Initializers::FFmpeg.setup(ffmpeg)
     end
   end
 end
