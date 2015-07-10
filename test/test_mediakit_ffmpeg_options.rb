@@ -3,20 +3,20 @@ require 'minitest_helper'
 class TestMediakitFfmpegOptions < Minitest::Test
   def test_global_options_of_boolean
     global = Mediakit::FFmpeg::Options::GlobalOption.new(l: true)
-    assert_equal("-l", global.compose)
+    assert_equal('-l', global.compose)
   end
 
   def test_global_options_with_str_arg
     global = Mediakit::FFmpeg::Options::GlobalOption.new(h: 'full')
-    assert_equal("-h full", global.compose)
+    assert_equal('-h full', global.compose)
   end
 
   def test_global_options_with_num_arg
     global = Mediakit::FFmpeg::Options::GlobalOption.new(t:100)
-    assert_equal("-t 100", global.compose)
+    assert_equal('-t 100', global.compose)
 
     global = Mediakit::FFmpeg::Options::GlobalOption.new(t: 100.0)
-    assert_equal("-t 100.0", global.compose)
+    assert_equal('-t 100.0', global.compose)
   end
 
   def test_global_options_with_nil_arg
@@ -49,7 +49,15 @@ class TestMediakitFfmpegOptions < Minitest::Test
   def test_quote_string
     option = Mediakit::FFmpeg::Options::OutputFileOption.new(
       options: {
-        filter_complex: Mediakit::FFmpeg::Options::QuoteString.new("something"),
+        'filter_complex' => Mediakit::FFmpeg::Options::QuoteString.new('[0:v][0:a][1:v][1:a] concat=2:v=1:a=1')
+      },
+      path: 'out.mp4'
+    )
+    assert_equal('-filter_complex "[0:v][0:a][1:v][1:a] concat=2:v=1:a=1" out.mp4', option.to_s)
+
+    option = Mediakit::FFmpeg::Options::OutputFileOption.new(
+      options: {
+        filter_complex: Mediakit::FFmpeg::Options::QuoteString.new('something'),
       },
       path: 'out.mp4'
     )
