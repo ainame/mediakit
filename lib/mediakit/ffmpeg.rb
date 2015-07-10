@@ -7,6 +7,10 @@ module Mediakit
     class FFmpegError < StandardError;
     end
 
+    class << self
+      attr_accessor(:default_global_option)
+    end
+    self.default_global_option = Options::GlobalOption.new
     attr_reader(:codecs, :formats, :decoders, :encoders)
 
     def self.create(driver = Mediakit::Drivers::FFmpeg.new)
@@ -26,12 +30,12 @@ module Mediakit
     #
     # @param [Mediakit::Runners::FFmpeg::Options] options options to create CLI argument
     def run(options, driver_options = {})
-      args = options.compose
+      args = options.compose(self.class.default_global_option)
       @driver.run(args, driver_options)
     end
 
     def command(options, driver_options = {})
-      args = options.compose
+      args = options.compose(self.class.default_global_option)
       @driver.command(args, driver_options)
     end
 

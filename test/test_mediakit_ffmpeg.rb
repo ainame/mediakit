@@ -43,4 +43,15 @@ class TestMediakitFfmpeg < Minitest::Test
     assert { !(Mediakit::FFmpeg::SubtitleCodec === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
     assert { !(Mediakit::FFmpeg::Encoder === Mediakit::FFmpeg::AudioCodec::CODEC_MP3) }
   end
+
+  def test_default_global_option
+    Mediakit::FFmpeg.default_global_option =
+      Mediakit::FFmpeg::Options::GlobalOption.new('y' => true)
+    @ffmpeg.run(Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('version' => true)))
+    last_command = @fake_driver.last_command
+    assert { last_command == 'ffmpeg -y -version' }
+  ensure
+    Mediakit::FFmpeg.default_global_option =
+      Mediakit::FFmpeg::Options::GlobalOption.new
+  end
 end

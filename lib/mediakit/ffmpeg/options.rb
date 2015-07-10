@@ -36,9 +36,10 @@ module Mediakit
         end
       end
 
-      def compose
+      def compose(default_global = GlobalOption.new)
+        merged_global = global ? default_global.merge(global) : default_global
         composed_string = ''
-        composed_string << "#{global}" if global
+        composed_string << "#{merged_global}"
         composed_string << " #{inputs.map(&:compose).join(' ')}" if inputs && !inputs.empty?
         composed_string << " #{output}" if output
         composed_string
