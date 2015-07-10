@@ -53,7 +53,7 @@ class TestMediakitFfmpegOptions < Minitest::Test
       },
       path: 'out.mp4'
     )
-    assert_equal('-filter_complex "[0:v][0:a][1:v][1:a] concat=2:v=1:a=1" out.mp4', option.to_s)
+    assert_equal('-filter_complex \'[0:v][0:a][1:v][1:a] concat=2:v=1:a=1\' out.mp4', option.to_s)
 
     option = Mediakit::FFmpeg::Options::OutputFileOption.new(
       options: {
@@ -61,7 +61,7 @@ class TestMediakitFfmpegOptions < Minitest::Test
       },
       path: 'out.mp4'
     )
-    assert_equal('-filter_complex "something" out.mp4', option.to_s)
+    assert_equal('-filter_complex \'something\' out.mp4', option.to_s)
   end
 
   def test_stream_specifier

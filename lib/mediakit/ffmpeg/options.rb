@@ -155,7 +155,7 @@ module Mediakit
         end
 
         def to_s
-          "\"#{@string}\""
+          "'#{@string}'"
         end
       end
 
