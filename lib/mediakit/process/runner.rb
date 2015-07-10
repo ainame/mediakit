@@ -29,28 +29,28 @@ module Mediakit
       # @overload run(command, args)
       #   @param command [String] command name
       #   @param args [Array] args as string
-      # @return out [String] stdout of command
-      # @return err [String] stderr of command
+      # @return out [String] stdout and stderr of command
       # @return exit_status [Boolean] is succeeded
       def run(bin, *args)
         command = build_command(bin, *args)
         begin
           stdin, stdout, stderr, wait_thread = Open3.popen3(command)
           stdin.close
-          output, error_output, exit_status = wait(stdout, stderr, wait_thread)
+          exit_status, output, error_output = wait(stdout, stderr, wait_thread)
         rescue Errno::ENOENT => e
           raise(CommandNotFoundError, "Can't find command - #{command}, #{e.meessage}")
         end
 
-        [output, error_output, exit_status]
+        [exit_status, output, error_output]
       end
 
       def wait(stdout, stderr, wait_thread)
         begin
-          setup_watchers(stdout, stderr)
+          setup_watchers(stderr)
           loop_thread = Thread.new { run_loop }
           wait_thread.join
           exit_status = (wait_thread.value.exitstatus == 0)
+          output = stdout.read
         rescue Timeout::Error => error
           force_kill_process(wait_thread.pid)
           raise(error)
@@ -59,7 +59,7 @@ module Mediakit
           loop_thread.join if loop_thread
         end
 
-        [@out_watcher.data, @err_watcher.data, exit_status]
+        [exit_status, output, @out_watcher.data]
       end
 
       def build_command(bin, *args)
@@ -76,13 +76,11 @@ module Mediakit
         "#{bin} #{escaped_args}"
       end
 
-      def setup_watchers(stdout, stderr)
+      def setup_watchers(stderr)
         @timer = @timeout ? TimeoutTimer.new(@timeout, Thread.current) : nil
-        @out_watcher = IOWatcher.new(stdout) { |data| @timer.update if @timer; logger.info(data) }
-        @err_watcher = IOWatcher.new(stderr) { |data| @timer.update if @timer; logger.error(data) }
+        @out_watcher = IOWatcher.new(stderr) { |data| @timer.update if @timer; logger.info(data); }
         @loop = Coolio::Loop.new
         @out_watcher.attach(@loop)
-        @err_watcher.attach(@loop)
         @timer.attach(@loop) if @timer
       end
 
@@ -90,7 +88,6 @@ module Mediakit
         @loop.run
       rescue => e
         # workaround for ambiguous RuntimeError
-        # TODO: replace logger method
         logger.warn(e.message)
         logger.warn(e.backtrace.join("\n"))
       end
@@ -98,7 +95,6 @@ module Mediakit
       def teardown_watchers
         @loop.watchers.each { |w| w.detach  if w.attached? }
         @out_watcher.close if @out_watcher && !@out_watcher.closed?
-        @err_watcher.close if @err_watcher && !@err_watcher.closed?
         @loop.stop if @loop.has_active_watchers?
       rescue RuntimeError => e
         logger.warn(e.message)

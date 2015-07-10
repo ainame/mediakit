@@ -35,7 +35,7 @@ module Mediakit
         options, rest_args = parse_options(args.dup)
         runner = Mediakit::Process::Runner.new(options)
         begin
-          stdout, stderr, exit_status = runner.run(bin, *rest_args)
+          exit_status, stdout, stderr = runner.run(bin, *rest_args)
           raise(FailError, stderr) unless exit_status
           stdout
         rescue Mediakit::Process::Runner::CommandNotFoundError => e
