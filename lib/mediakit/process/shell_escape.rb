@@ -8,7 +8,7 @@ module Mediakit
         when 1
           escape_with_split(args[0])
         else
-          Shellwords.join(args.map { |x| Shellwords.escape(x) })
+          Shellwords.join(args)
         end
       end
       module_function(:escape)
@@ -17,8 +17,7 @@ module Mediakit
 
       def self.escape_with_split(string)
         splits = Shellwords.split(string)
-        splits = splits.map { |x| Shellwords.escape(x) }
-        splits.join(' ')
+        Shellwords.join(splits)
       end
     end
   end
