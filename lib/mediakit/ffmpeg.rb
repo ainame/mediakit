@@ -10,7 +10,8 @@ module Mediakit
     class << self
       attr_accessor(:default_global_option)
     end
-    self.default_global_option = Options::GlobalOption.new
+    self.default_global_option = Options::GlobalOption.new('y' => true)
+
     attr_reader(:codecs, :formats, :decoders, :encoders)
 
     def self.create(driver = Mediakit::Drivers::FFmpeg.new)
