@@ -15,7 +15,7 @@ class TestMediakitFfmpeg < Minitest::Test
     options = Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('version' => true))
 
     @ffmpeg.run(options, nice: 10)
-    assert_equal(@fake_driver.last_command, "nice -n 10 sh -c \"ffmpeg -version\"")
+    assert_equal(@fake_driver.last_command, "nice -n 10 sh -c \"ffmpeg -y -version\"")
     assert_equal(@fake_driver.nice, 10)
     assert_equal(@fake_driver.timeout, nil)
 
@@ -45,13 +45,7 @@ class TestMediakitFfmpeg < Minitest::Test
   end
 
   def test_default_global_option
-    Mediakit::FFmpeg.default_global_option =
-      Mediakit::FFmpeg::Options::GlobalOption.new('y' => true)
     @ffmpeg.run(Mediakit::FFmpeg::Options.new(Mediakit::FFmpeg::Options::GlobalOption.new('version' => true)))
-    last_command = @fake_driver.last_command
-    assert { last_command == 'ffmpeg -y -version' }
-  ensure
-    Mediakit::FFmpeg.default_global_option =
-      Mediakit::FFmpeg::Options::GlobalOption.new
+    assert { @fake_driver.last_command == 'ffmpeg -y -version' }
   end
 end

@@ -30,7 +30,7 @@ class TestMediakitProcessRunner < Minitest::Test
     rescue Timeout::Error => e
       error = e
     ensure
-      assert_nil(error)
+      assert { error == nil }
     end
   end
 
@@ -62,11 +62,10 @@ class TestMediakitProcessRunner < Minitest::Test
 
   def test_return_values
     @timeout = 0.5
-    out, err, status = runner.run(@bin, '--sleep=0.1 --progress')
-    assert(out)
-    assert(out.kind_of?(String))
-    assert(err.kind_of?(String))
-    assert(status)
+    status, out = runner.run(@bin, '--sleep=0.1 --progress')
+    assert { out }
+    assert { out.kind_of?(String) }
+    assert { status }
   end
 
   def test_escape
@@ -77,9 +76,7 @@ class TestMediakitProcessRunner < Minitest::Test
     io = StringIO.new
     @logger = Logger.new(io)
     @logger.level = Logger::DEBUG
-    out, err, _ = runner.run(@bin, '--sleep=0.1 --progress')
-    assert_equal(runner.logger, @logger)
-    # assert_equal(out, io.string)
-    # assert_equal(err, err)
+    status, out = runner.run(@bin, '--sleep=0.1 --progress')
+    assert { runner.logger == @logger }
   end
 end
