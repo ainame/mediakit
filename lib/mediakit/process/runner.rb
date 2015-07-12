@@ -56,6 +56,8 @@ module Mediakit
         ensure
           teardown_watchers
           loop_thread.join if loop_thread
+          @out_watcher.read
+          @err_watcher.read
         end
 
         [exit_status, @out_watcher.data, @err_watcher.data]
@@ -124,6 +126,11 @@ module Mediakit
 
         def on_close
           @block = nil
+        end
+
+        def read
+          @data << @io.read unless @io.closed?
+          @io.close unless @io.closed?
         end
       end
 
