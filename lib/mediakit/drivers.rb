@@ -36,7 +36,7 @@ module Mediakit
         runner = Mediakit::Process::Runner.new(options)
         begin
           exit_status, stdout, stderr = runner.run(bin, *rest_args)
-          raise(FailError, stderr) unless exit_status
+          raise(FailError, stdout + stderr) unless exit_status
           stdout
         rescue Mediakit::Process::Runner::CommandNotFoundError => e
           raise(ConfigurationError, "cant' find bin in #{bin}.")
