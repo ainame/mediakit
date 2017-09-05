@@ -7,7 +7,7 @@ dependencies:
   pre:
     - >
         FFMPEG_DIR="$HOME/ffmpeg_build";
-        FFMPEG_VERSION="3.3.3";
+        FFMPEG_VERSION="2.6.3";
         if [ ! -d "$FFMPEG_DIR" ]; then
         mkdir "$FFMPEG_DIR" &&
         cd "$FFMPEG_DIR" &&
@@ -15,9 +15,9 @@ dependencies:
         mkdir fdkaac &&
         mkdir src &&
         cd src &&
-        wget https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.4.tar.gz &&
-        tar xfz fdk-aac-0.1.4.tar.gz &&
-        cd fdk-aac-0.1.4 &&
+        wget https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.5.tar.gz &&
+        tar xfz fdk-aac-0.1.5.tar.gz &&
+        cd fdk-aac-0.1.5 &&
         autoreconf -fvi &&
         ./configure --prefix="$FFMPEG_DIR/fdkaac" --disable-shared &&
         sudo make install &&
