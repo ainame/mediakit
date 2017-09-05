@@ -15,9 +15,9 @@ dependencies:
         mkdir fdkaac &&
         mkdir src &&
         cd src &&
-        wget https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.5.tar.gz &&
-        tar xfz fdk-aac-0.1.5.tar.gz &&
-        cd fdk-aac-0.1.5 &&
+        wget https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.4.tar.gz &&
+        tar xfz fdk-aac-0.1.4.tar.gz &&
+        cd fdk-aac-0.1.4 &&
         autoreconf -fvi &&
         ./configure --prefix="$FFMPEG_DIR/fdkaac" --disable-shared &&
         sudo make install &&
