@@ -62,7 +62,7 @@ module Mediakit
       end
 
       # Base class for Options
-      class OrderedHash < ActiveSupport::OrderedHash
+      class OrderedHash < Hash
         # @param [Hash] options initial option values
         def initialize(options = {})
           options.each { |key, value| raise_if_invalid_arg_error(key, value) } if options
