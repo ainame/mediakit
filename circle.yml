@@ -7,7 +7,7 @@ dependencies:
   pre:
     - >
         FFMPEG_DIR="$HOME/ffmpeg_build";
-        FFMPEG_VERSION="2.6.3";
+        FFMPEG_VERSION="3.3.3";
         if [ ! -d "$FFMPEG_DIR" ]; then
         mkdir "$FFMPEG_DIR" &&
         cd "$FFMPEG_DIR" &&
