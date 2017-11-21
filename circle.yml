@@ -26,6 +26,7 @@ dependencies:
         tar -xjpf "ffmpeg-$FFMPEG_VERSION.tar.bz2" &&
         cd "ffmpeg-$FFMPEG_VERSION" &&
         ./configure
+        --disable-yasm
         --extra-cflags="-I$FFMPEG_DIR/fdkaac/include"
         --extra-ldflags="-L$FFMPEG_DIR/fdkaac/lib"
         --enable-gpl
